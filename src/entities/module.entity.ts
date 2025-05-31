@@ -1,5 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Reference } from './reference.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Lesson } from './lesson.entity';
 
 @Entity('modules')
@@ -13,19 +19,13 @@ export class Module {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @OneToMany(() => Reference, (reference) => reference.module)
-  references: Reference[];
+  @Column({ nullable: true })
+  course_id: string;
+
+  @ManyToOne('Course')
+  @JoinColumn({ name: 'course_id' })
+  course: any;
 
   @OneToMany(() => Lesson, (lesson) => lesson.module)
   lessons: Lesson[];
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
-
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updated_at: Date;
 }
