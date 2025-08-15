@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { BadRequestException, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import type { Repository } from "typeorm"
 import type { CreateCourseDto } from "./dto/create-course.dto"
@@ -92,6 +92,19 @@ export class CoursesRepository {
                 },
             },
         })
+    }
+
+    async findByIdOrThrow(id: string, onNotFound?: () => never): Promise<Course> {
+        const course = await this.findById(id);
+        if (course) {
+            return course;
+        }
+
+        if (onNotFound) {
+            return onNotFound();
+        }
+
+        throw new BadRequestException('cannot find course');
     }
 
     async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course | null> {

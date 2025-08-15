@@ -2,14 +2,40 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CategoriesModule } from './categories/categories.module';
-import { CoursesModule } from './courses/courses.module';
-import { LessonResourcesModule } from './lesson-resources/lesson-resources.module';
-import { LessonsModule } from './lessons/lessons.module';
-import { ModulesModule } from './modules/modules.module';
-import { ReferencesModule } from './references/references.module';
-import { StorageModule } from './storage/storage.module';
-import { UsersModule } from './users/users.module';
+import * as path from 'path';
+import * as fs from 'fs';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+
+function loadModules(): (new () => any)[] {
+  const modulesDir = path.join(__dirname);
+  const moduleFiles = fs
+    .readdirSync(modulesDir, { withFileTypes: true })
+    .filter(
+      (dirent) =>
+        dirent.isDirectory() &&
+        fs.existsSync(
+          path.join(modulesDir, dirent.name, `${dirent.name}.module.js`),
+        ),
+    )
+    .map((dirent) => {
+      const modulePath = path.join(
+        modulesDir,
+        dirent.name,
+        `${dirent.name}.module.js`,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+      const imported = require(modulePath) as Record<string, unknown>;
+      const moduleClass = Object.values(imported).find(
+        (exp: unknown) =>
+          typeof exp === 'function' &&
+          /Module$/.test((exp as { name?: string }).name || ''),
+      );
+      return moduleClass as new () => any;
+    })
+    .filter(Boolean);
+
+  return moduleFiles;
+}
 
 @Module({
   imports: [
@@ -22,15 +48,9 @@ import { UsersModule } from './users/users.module';
       database: process.env.DB_DATABASE || 'skillcert',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
+      namingStrategy: new SnakeNamingStrategy(),
     }),
-    ReferencesModule,
-    UsersModule,
-    CoursesModule,
-    ModulesModule,
-    LessonsModule,
-    CategoriesModule,
-    LessonResourcesModule,
-    StorageModule,
+    ...loadModules(),
   ],
   controllers: [AppController],
   providers: [AppService],

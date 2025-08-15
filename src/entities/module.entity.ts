@@ -8,8 +8,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Course } from './course.entity';
 import { Lesson } from './lesson.entity';
+import { Course } from 'src/courses/entities/course.entity';
 
 @Entity('modules')
 export class Module {
