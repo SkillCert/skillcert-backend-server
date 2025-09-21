@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Lesson } from './lesson.entity';
 import { COLUMN_LENGTHS } from '../common/constants';
+import { Lesson } from './lesson.entity';
 
 export enum ResourceType {
   DOCUMENT = 'document',

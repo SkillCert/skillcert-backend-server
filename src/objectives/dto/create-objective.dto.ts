@@ -1,10 +1,10 @@
 import {
   IsNotEmpty,
-  IsString,
-  IsOptional,
   IsNumber,
-  Min,
+  IsOptional,
+  IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 
 export class CreateObjectiveDto {

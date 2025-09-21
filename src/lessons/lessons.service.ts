@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Lesson } from '../entities/lesson.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { LessonResponseDto } from './dto/lesson-response.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Injectable()
 export class LessonsService {
@@ -54,12 +54,15 @@ export class LessonsService {
     const lessons = await this.lessonRepository.find({
       where: { module_id: moduleId },
       order: { created_at: 'ASC' },
-skip,
-take: limit
+      skip,
+      take: limit,
     });
     return lessons.map(this.toResponseDto);
   }
-  async update(id: string, updateLessonDto: UpdateLessonDto): Promise<LessonResponseDto> {
+  async update(
+    id: string,
+    updateLessonDto: UpdateLessonDto,
+  ): Promise<LessonResponseDto> {
     const lesson = await this.findOne(id); // this already returns DTO
     const entity = await this.lessonRepository.findOne({ where: { id } });
 
@@ -68,7 +71,6 @@ take: limit
     Object.assign(entity, updateLessonDto);
     const updated = await this.lessonRepository.save(entity);
     return this.toResponseDto(updated);
-
   }
 
   async remove(id: string): Promise<void> {

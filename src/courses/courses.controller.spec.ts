@@ -1,7 +1,7 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesController } from './courses.controller';
 import { CoursesService } from './courses.service';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { Course } from './entities/course.entity';
 
 describe('CoursesController', () => {
@@ -83,9 +83,13 @@ describe('CoursesController', () => {
     });
 
     it('should throw NotFoundException when course not found', async () => {
-      mockCoursesService.findOne.mockRejectedValue(new NotFoundException('Course not found'));
+      mockCoursesService.findOne.mockRejectedValue(
+        new NotFoundException('Course not found'),
+      );
 
-      await expect(controller.findOne(validId)).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne(validId)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(service.findOne).toHaveBeenCalledWith(validId);
     });
   });
@@ -95,7 +99,10 @@ describe('CoursesController', () => {
 
     it('should return the updated course', async () => {
       const updateDto = { title: 'Updated Title' };
-      mockCoursesService.update.mockResolvedValue({ ...mockCourse, ...updateDto });
+      mockCoursesService.update.mockResolvedValue({
+        ...mockCourse,
+        ...updateDto,
+      });
 
       const result = await controller.update(validId, updateDto);
 
@@ -104,9 +111,13 @@ describe('CoursesController', () => {
     });
 
     it('should throw BadRequestException if update DTO is undefined', async () => {
-      mockCoursesService.update.mockRejectedValue(new BadRequestException('DTO is required'));
+      mockCoursesService.update.mockRejectedValue(
+        new BadRequestException('DTO is required'),
+      );
 
-      await expect(controller.update(validId, undefined as any)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.update(validId, undefined as any),
+      ).rejects.toThrow(BadRequestException);
       expect(service.update).toHaveBeenCalledWith(validId, undefined);
     });
   });

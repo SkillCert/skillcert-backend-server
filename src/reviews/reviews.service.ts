@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CoursesRepository } from 'src/courses/courses.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewResponseDto } from './dto/review-response.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/reviews.entity';
 import { ReviewsRepository } from './reviews.repository';
 
@@ -26,7 +26,6 @@ export class ReviewsService {
       updatedAt: review.updatedAt,
     };
   }
-
 
   async createReview(
     userId: string,
@@ -62,7 +61,10 @@ export class ReviewsService {
     userId: string,
     courseId: string,
   ): Promise<ReviewResponseDto> {
-    const review = await this.reviewsRepository.findByIdOrThrow(courseId, userId);
+    const review = await this.reviewsRepository.findByIdOrThrow(
+      courseId,
+      userId,
+    );
     return this.toResponseDto(review);
   }
 
@@ -71,7 +73,10 @@ export class ReviewsService {
     courseId: string,
     updateReviewDto: UpdateReviewDto,
   ): Promise<ReviewResponseDto> {
-    const review = await this.reviewsRepository.findByIdOrThrow(courseId, userId);
+    const review = await this.reviewsRepository.findByIdOrThrow(
+      courseId,
+      userId,
+    );
 
     review.update(
       updateReviewDto.rating,

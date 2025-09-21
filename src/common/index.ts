@@ -13,5 +13,5 @@ export * from './filters/all-exceptions.filter';
 export * from './filters/forbidden-exception.filter';
 
 // Logger
-export * from './logger';
 export * from './filters/database-exception.filter';
+export * from './logger';

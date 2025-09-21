@@ -16,11 +16,11 @@ import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { QuizResponseDto } from './dto/quiz-response.dto';
 import { QuizResultDto } from './dto/quiz-result.dto';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
-import { QuizResponseDto } from './dto/quiz-response.dto';
 import { QuizService } from './quiz.service';
 
 @Controller('quizzes')

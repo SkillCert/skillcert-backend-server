@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
-import 'multer';
-import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import 'multer';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';

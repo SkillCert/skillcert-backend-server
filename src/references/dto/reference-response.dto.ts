@@ -1,7 +1,7 @@
 // references/dto/reference-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { ModuleResponseDto } from '../../modules/dto/module-response.dto';
 import { LessonResponseDto } from '../../lessons/dto/lesson-response.dto';
+import { ModuleResponseDto } from '../../modules/dto/module-response.dto';
 
 export class ReferenceResponseDto {
   @ApiProperty()
@@ -22,9 +22,9 @@ export class ReferenceResponseDto {
   @ApiProperty({ required: false, type: () => LessonResponseDto })
   lesson?: LessonResponseDto;
 
-  @ApiProperty({required: false,})
+  @ApiProperty({ required: false })
   createdAt: Date;
 
-  @ApiProperty({required: false,})
+  @ApiProperty({ required: false })
   updatedAt: Date;
 }
