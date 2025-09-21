@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ObjectivesService } from './objectives.service';
-import { ObjectivesController } from './objectives.controller';
-import { Objective } from './entities/objective.entity';
 import { Course } from 'src/entities/course.entity';
+import { Objective } from './entities/objective.entity';
+import { ObjectivesController } from './objectives.controller';
+import { ObjectivesService } from './objectives.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Objective, Course])],

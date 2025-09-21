@@ -17,7 +17,10 @@ export class UsersRepository {
     return await this.userRepository.save(user);
   }
 
-  async findAll(page?: number, limit?: number): Promise<{ users: User[]; total: number }> {
+  async findAll(
+    page?: number,
+    limit?: number,
+  ): Promise<{ users: User[]; total: number }> {
     const skip = page && limit ? (page - 1) * limit : undefined;
     const take = limit;
 

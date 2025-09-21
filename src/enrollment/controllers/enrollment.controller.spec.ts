@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { EnrollmentController } from './enrollment.controller';
-import { EnrollmentService } from '../providers/enrollment.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course } from '../../courses/entities/course.entity';
+import { User } from '../../users/entities/user.entity';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
 import { Enrollment } from '../entities/enrollment.entity';
-import { User } from '../../users/entities/user.entity';
-import { Course } from '../../courses/entities/course.entity';
+import { EnrollmentService } from '../providers/enrollment.service';
+import { EnrollmentController } from './enrollment.controller';
 
 describe('EnrollmentController', () => {
   let controller: EnrollmentController;
@@ -111,7 +111,9 @@ describe('EnrollmentController', () => {
       const result = await controller.enroll(createEnrollmentDto);
 
       // Assert
-      expect(enrollmentService.enroll).toHaveBeenCalledWith(createEnrollmentDto);
+      expect(enrollmentService.enroll).toHaveBeenCalledWith(
+        createEnrollmentDto,
+      );
       expect(enrollmentService.enroll).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockEnrollment);
     });
@@ -125,7 +127,9 @@ describe('EnrollmentController', () => {
       await expect(controller.enroll(createEnrollmentDto)).rejects.toThrow(
         NotFoundException,
       );
-      expect(enrollmentService.enroll).toHaveBeenCalledWith(createEnrollmentDto);
+      expect(enrollmentService.enroll).toHaveBeenCalledWith(
+        createEnrollmentDto,
+      );
       expect(enrollmentService.enroll).toHaveBeenCalledTimes(1);
     });
 
@@ -138,7 +142,9 @@ describe('EnrollmentController', () => {
       await expect(controller.enroll(createEnrollmentDto)).rejects.toThrow(
         NotFoundException,
       );
-      expect(enrollmentService.enroll).toHaveBeenCalledWith(createEnrollmentDto);
+      expect(enrollmentService.enroll).toHaveBeenCalledWith(
+        createEnrollmentDto,
+      );
       expect(enrollmentService.enroll).toHaveBeenCalledTimes(1);
     });
 
@@ -151,7 +157,9 @@ describe('EnrollmentController', () => {
       await expect(controller.enroll(createEnrollmentDto)).rejects.toThrow(
         'Database connection failed',
       );
-      expect(enrollmentService.enroll).toHaveBeenCalledWith(createEnrollmentDto);
+      expect(enrollmentService.enroll).toHaveBeenCalledWith(
+        createEnrollmentDto,
+      );
       expect(enrollmentService.enroll).toHaveBeenCalledTimes(1);
     });
   });

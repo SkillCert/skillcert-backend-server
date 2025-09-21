@@ -1,5 +1,3 @@
-import { UserRole } from '../enums/user-role.enum';
-export { UserRole } from '../enums/user-role.enum';
 import { Review } from 'src/reviews/entities/reviews.entity';
 import {
   Column,
@@ -9,10 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { COLUMN_LENGTHS } from '../../common/constants';
 import { Course } from '../../courses/entities/course.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
-import { COLUMN_LENGTHS } from '../../common/constants';
-
+import { UserRole } from '../enums/user-role.enum';
+export { UserRole } from '../enums/user-role.enum';
 
 @Entity('users')
 export class User {

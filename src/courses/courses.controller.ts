@@ -17,8 +17,8 @@ import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CoursesService } from './courses.service';
-import { Course } from './entities/course.entity';
 import { CourseResponseDto } from './dto/course-response.dto';
+import { Course } from './entities/course.entity';
 
 @Controller('courses')
 @ApiTags('courses')

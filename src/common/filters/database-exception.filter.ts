@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { QueryFailedError, EntityNotFoundError, TypeORMError } from 'typeorm';
+import { EntityNotFoundError, QueryFailedError, TypeORMError } from 'typeorm';
 
 @Catch(QueryFailedError, EntityNotFoundError, TypeORMError)
 export class DatabaseExceptionFilter implements ExceptionFilter {
@@ -21,13 +21,11 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
     let message = 'Database error';
     let error = 'Database Error';
 
-    
     if (exception instanceof QueryFailedError) {
       const err = exception as any;
-      
-    
+
       switch (err.code) {
-        case '23505': 
+        case '23505':
           status = HttpStatus.CONFLICT;
           message = 'Duplicate entry';
           error = 'Conflict Error';
@@ -37,7 +35,7 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
           message = 'Related resource not found';
           error = 'Foreign Key Violation';
           break;
-        case '23502': 
+        case '23502':
           status = HttpStatus.BAD_REQUEST;
           message = 'Missing required field';
           error = 'Not Null Violation';

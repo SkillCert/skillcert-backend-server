@@ -11,8 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
-import { Objective } from '../../objectives/entities/objective.entity';
 import { Category } from '../../entities/category.entity';
+import { Objective } from '../../objectives/entities/objective.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('courses')

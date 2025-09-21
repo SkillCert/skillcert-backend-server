@@ -18,9 +18,8 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Reference } from '../entities/reference.entity';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
-import { UpdateReferenceDto } from './dto/update-reference.dto';
-import { Reference } from '../entities/reference.entity';
 import { ReferenceResponseDto } from './dto/reference-response.dto';
+import { UpdateReferenceDto } from './dto/update-reference.dto';
 import { ReferencesService } from './references.service';
 
 @Controller('references')
@@ -49,7 +48,9 @@ export class ReferencesController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createReferenceDto: CreateReferenceDto): Promise<ReferenceResponseDto> {
+  create(
+    @Body() createReferenceDto: CreateReferenceDto,
+  ): Promise<ReferenceResponseDto> {
     return this.referencesService.create(createReferenceDto);
   }
 
@@ -59,7 +60,9 @@ export class ReferencesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ReferenceResponseDto> {
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ReferenceResponseDto> {
     return this.referencesService.findOne(id);
   }
 

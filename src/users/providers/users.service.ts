@@ -1,16 +1,16 @@
-import type { User } from "../entities/user.entity"
-import * as bcrypt from "bcrypt"
-import { CreateUserDto } from "../dto/create-user.dto"
-import { UsersRepository } from "../users.repository"
-import { UpdateUserDto } from "../dto/update-user.dto"
-import { UserResponseDto } from "../dto/user-response.dto"
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PASSWORD_SALT_ROUNDS } from '../../common/constants';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
+import type { User } from '../entities/user.entity';
+import { UsersRepository } from '../users.repository';
 
 @Injectable()
 export class UsersService {
@@ -68,7 +68,10 @@ export class UsersService {
     return this.toResponseDto(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     if (!id) {
       throw new BadRequestException('User ID is required');
     }

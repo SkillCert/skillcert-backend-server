@@ -8,17 +8,14 @@ import {
   Param,
   Post,
   Put,
-  Query,
-  UsePipes, 
+  UsePipes,
   ValidationPipe,
-} from "@nestjs/common"
-import type { User } from "../entities/user.entity"
-import { UsersService } from "../providers/users.service";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { UserResponseDto } from "../dto/user-response.dto";
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { UsersService } from '../providers/users.service';
 
 @Controller('users')
 @ApiTags('users')
@@ -84,17 +81,19 @@ export class UsersController {
       },
     },
   })
-  
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<{
-    message: string
-    data: UserResponseDto[]
-    count: number
+    message: string;
+    data: UserResponseDto[];
+    count: number;
   }> {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
-    const { users, total } = await this.usersService.findAll(pageNumber, limitNumber);
+    const { users, total } = await this.usersService.findAll(
+      pageNumber,
+      limitNumber,
+    );
 
     return {
       message: 'Users retrieved successfully',
@@ -167,8 +166,8 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<{
-    message: string
-    data: UserResponseDto
+    message: string;
+    data: UserResponseDto;
   }> {
     const user = await this.usersService.update(id, updateUserDto);
     return {

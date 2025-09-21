@@ -11,7 +11,10 @@ class PaginationMetaDto {
   @ApiProperty({ example: 100, description: 'Total number of items available' })
   total: number;
 
-  @ApiProperty({ example: true, description: 'Indicates if there are more pages available' })
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if there are more pages available',
+  })
   hasMore: boolean;
 }
 

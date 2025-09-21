@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateModuleDto } from './dto/create-module.dto';
-import { UpdateModuleDto } from './dto/update-module.dto';
-import { Module as ModuleEntity } from './entities/module.entity';
-import { ModuleResponseDto } from './dto/module-response.dto';
-import { LessonResponseDto } from '../lessons/dto/lesson-response.dto';
-import { Module } from './entities/module.entity';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { LessonResponseDto } from '../lessons/dto/lesson-response.dto';
+import { CreateModuleDto } from './dto/create-module.dto';
+import { ModuleResponseDto } from './dto/module-response.dto';
+import { UpdateModuleDto } from './dto/update-module.dto';
+import { Module, Module as ModuleEntity } from './entities/module.entity';
 
 import { PaginatedModuleResponseDto } from './dto/paginated-module-response.dto';
 
@@ -24,14 +23,17 @@ export class ModulesService {
       title: module.title,
       description: module.description,
       lessons: module.lessons
-        ? module.lessons.map(lesson => ({
-            id: lesson.id,
-            title: lesson.title,
-            content: lesson.content,
-            type: lesson.type,
-            createdAt: lesson.created_at,
-            updatedAt: lesson.updated_at,
-          } as LessonResponseDto))
+        ? module.lessons.map(
+            (lesson) =>
+              ({
+                id: lesson.id,
+                title: lesson.title,
+                content: lesson.content,
+                type: lesson.type,
+                createdAt: lesson.created_at,
+                updatedAt: lesson.updated_at,
+              }) as LessonResponseDto,
+          )
         : [],
       createdAt: module.created_at,
       updatedAt: module.updated_at,
@@ -44,7 +46,9 @@ export class ModulesService {
     return this.toResponseDto(saved);
   }
 
-  async findAll(pagination: PaginationQueryDto): Promise<PaginatedModuleResponseDto> {
+  async findAll(
+    pagination: PaginationQueryDto,
+  ): Promise<PaginatedModuleResponseDto> {
     const { page = 1, limit = 20 } = pagination;
     const skip = (page - 1) * limit;
 
@@ -106,7 +110,10 @@ export class ModulesService {
     };
   }
 
-  async update(id: string, updateModuleDto: UpdateModuleDto): Promise<ModuleResponseDto> {
+  async update(
+    id: string,
+    updateModuleDto: UpdateModuleDto,
+  ): Promise<ModuleResponseDto> {
     const module = await this.findOne(id);
     Object.assign(module, updateModuleDto);
     const updated = await this.moduleRepository.save(module as any);

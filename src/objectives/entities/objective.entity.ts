@@ -1,12 +1,12 @@
+import { IsNotEmpty, IsString } from 'class-validator';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsNotEmpty, IsString, } from 'class-validator';
 import { Course } from '../../courses/entities/course.entity';
 
 @Entity('objectives')
