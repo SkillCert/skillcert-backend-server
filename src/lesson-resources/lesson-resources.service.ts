@@ -6,16 +6,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
+import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
 import { FileStorageInterface } from '../storage/interfaces/file-storage.interface';
-import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import { LESSON_RESOURCES_PATH } from './constants';
-import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 
 @Injectable()
@@ -29,6 +30,25 @@ export class LessonResourcesService {
     private readonly logger: CentralizedLoggerService,
   ) {
     this.logger.setContext(LessonResourcesService.name);
+  }
+
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<LessonResource>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<LessonResource> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('resource.created_at >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('resource.created_at <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
   }
 
   private toResponseDto(resource: LessonResource): LessonResourceResponseDto {
@@ -54,26 +74,44 @@ export class LessonResourcesService {
     file: Express.Multer.File,
     fileUploadDto: CreateLessonResourceDto,
   ): Promise<LessonResourceResponseDto> {
-    if (!file) { 
-      throw new BadRequestException('No file provided'); 
+    if (!file) {
+      throw new BadRequestException('No file provided');
     }
     const lessonResource = this.lessonResourceRepository.create(fileUploadDto);
     const saved = await this.lessonResourceRepository.save(lessonResource);
     return this.toResponseDto(saved);
   }
 
-  async findAll(): Promise<LessonResourceResponseDto[]> {
-    const resources = await this.lessonResourceRepository.find({
-      relations: ['lesson'],
-      where: { is_active: true },
-      order: { created_at: 'DESC' },
-    });
-    return resources.map(this.toResponseDto);
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ resources: LessonResourceResponseDto[]; total: number }> {
+    const queryBuilder = this.lessonResourceRepository
+      .createQueryBuilder('resource')
+      .leftJoinAndSelect('resource.lesson', 'lesson')
+      .where('resource.is_active = :isActive', { isActive: true })
+      .orderBy('resource.created_at', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+    }
+
+    const [resources, total] = await queryBuilder.getManyAndCount();
+    return {
+      resources: resources.map(this.toResponseDto),
+      total,
+    };
   }
 
   async findOne(id: string): Promise<LessonResourceResponseDto> {
     this.logger.debug(`Finding lesson resource by ID: ${id}`);
-    
+
     const lessonResource = await this.lessonResourceRepository.findOne({
       where: { id, is_active: true },
       relations: ['lesson'],
@@ -87,15 +125,27 @@ export class LessonResourcesService {
     return this.toResponseDto(lessonResource);
   }
 
-  async findByLesson(lessonId: string): Promise<LessonResourceResponseDto[]> {
-    const resources = await this.lessonResourceRepository.find({
-      where: { lesson_id: lessonId, is_active: true },
-      order: { created_at: 'DESC' },
-    });
+  async findByLesson(
+    lessonId: string,
+    filters?: DateRangeFilterDto,
+  ): Promise<LessonResourceResponseDto[]> {
+    const queryBuilder = this.lessonResourceRepository
+      .createQueryBuilder('resource')
+      .where('resource.lesson_id = :lessonId', { lessonId })
+      .andWhere('resource.is_active = :isActive', { isActive: true })
+      .orderBy('resource.created_at', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    const resources = await queryBuilder.getMany();
     return resources.map(this.toResponseDto);
   }
 
-  async findByResourceType(resourceType: ResourceType): Promise<LessonResourceResponseDto[]> {
+  async findByResourceType(
+    resourceType: ResourceType,
+  ): Promise<LessonResourceResponseDto[]> {
     const resources = await this.lessonResourceRepository.find({
       where: { resource_type: resourceType, is_active: true },
       relations: ['lesson'],
@@ -113,8 +163,6 @@ export class LessonResourcesService {
     const saved = await this.lessonResourceRepository.save(lessonResource);
     return this.toResponseDto(saved);
   }
-
-
 
   // async create(
   //   file: Express.Multer.File,
