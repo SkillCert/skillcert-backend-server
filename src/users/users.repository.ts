@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import type { CreateUserDto } from './dto/create-user.dto';
 import type { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -44,7 +44,14 @@ export class UsersRepository {
   ): Promise<{ users: User[]; total: number }> {
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
-      .select(['user.id', 'user.name', 'user.email', 'user.role', 'user.createdAt', 'user.updatedAt'])
+      .select([
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.role',
+        'user.createdAt',
+        'user.updatedAt',
+      ])
       .orderBy('user.createdAt', 'DESC');
 
     if (filters) {

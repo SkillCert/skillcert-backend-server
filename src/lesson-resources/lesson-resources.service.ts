@@ -7,17 +7,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
+import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
 import { FileStorageInterface } from '../storage/interfaces/file-storage.interface';
-import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import { LESSON_RESOURCES_PATH } from './constants';
-import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
-import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 
 @Injectable()
 export class LessonResourcesService {
@@ -74,8 +74,8 @@ export class LessonResourcesService {
     file: Express.Multer.File,
     fileUploadDto: CreateLessonResourceDto,
   ): Promise<LessonResourceResponseDto> {
-    if (!file) { 
-      throw new BadRequestException('No file provided'); 
+    if (!file) {
+      throw new BadRequestException('No file provided');
     }
     const lessonResource = this.lessonResourceRepository.create(fileUploadDto);
     const saved = await this.lessonResourceRepository.save(lessonResource);
@@ -111,7 +111,7 @@ export class LessonResourcesService {
 
   async findOne(id: string): Promise<LessonResourceResponseDto> {
     this.logger.debug(`Finding lesson resource by ID: ${id}`);
-    
+
     const lessonResource = await this.lessonResourceRepository.findOne({
       where: { id, is_active: true },
       relations: ['lesson'],
@@ -143,7 +143,9 @@ export class LessonResourcesService {
     return resources.map(this.toResponseDto);
   }
 
-  async findByResourceType(resourceType: ResourceType): Promise<LessonResourceResponseDto[]> {
+  async findByResourceType(
+    resourceType: ResourceType,
+  ): Promise<LessonResourceResponseDto[]> {
     const resources = await this.lessonResourceRepository.find({
       where: { resource_type: resourceType, is_active: true },
       relations: ['lesson'],
@@ -161,8 +163,6 @@ export class LessonResourcesService {
     const saved = await this.lessonResourceRepository.save(lessonResource);
     return this.toResponseDto(saved);
   }
-
-
 
   // async create(
   //   file: Express.Multer.File,

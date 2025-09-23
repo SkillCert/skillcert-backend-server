@@ -12,12 +12,18 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { FilteredPaginationQueryDto } from '../common';
 import { Category } from '../entities/category.entity';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { FilteredPaginationQueryDto } from '../common';
 
 @Controller('categories')
 @ApiTags('categories')
@@ -110,17 +116,45 @@ export class CategoriesController {
       },
     },
   })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination. Defaults to 1.', example: 1 })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page. Defaults to 20, max 100.', example: 10 })
-  @ApiQuery({ name: 'startDate', required: false, type: String, description: 'Start date for filtering (ISO 8601 format)', example: '2023-01-01T00:00:00.000Z' })
-  @ApiQuery({ name: 'endDate', required: false, type: String, description: 'End date for filtering (ISO 8601 format)', example: '2023-12-31T23:59:59.999Z' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number for pagination. Defaults to 1.',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page. Defaults to 20, max 100.',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-12-31T23:59:59.999Z',
+  })
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() query: FilteredPaginationQueryDto): Promise<{
     message: string;
     data: Category[];
     total: number;
   }> {
-    const { categories, total } = await this.categoriesService.findAll(query.page, query.limit, query);
+    const { categories, total } = await this.categoriesService.findAll(
+      query.page,
+      query.limit,
+      query,
+    );
     return {
       message: 'Categories retrieved successfully',
       data: categories,

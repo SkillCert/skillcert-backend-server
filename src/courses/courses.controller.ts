@@ -12,15 +12,21 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { FilteredPaginationQueryDto } from '../common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CoursesService } from './courses.service';
-import { Course } from './entities/course.entity';
 import { CourseResponseDto } from './dto/course-response.dto';
-import { FilteredPaginationQueryDto } from '../common';
+import { Course } from './entities/course.entity';
 
 @Controller('courses')
 @ApiTags('courses')
@@ -101,12 +107,38 @@ export class CoursesController {
       },
     },
   })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination. Defaults to 1.', example: 1 })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page. Defaults to 20, max 100.', example: 10 })
-  @ApiQuery({ name: 'startDate', required: false, type: String, description: 'Start date for filtering (ISO 8601 format)', example: '2023-01-01T00:00:00.000Z' })
-  @ApiQuery({ name: 'endDate', required: false, type: String, description: 'End date for filtering (ISO 8601 format)', example: '2023-12-31T23:59:59.999Z' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number for pagination. Defaults to 1.',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page. Defaults to 20, max 100.',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-12-31T23:59:59.999Z',
+  })
   @HttpCode(HttpStatus.OK)
-  findAll(@Query() query: FilteredPaginationQueryDto): Promise<{ courses: CourseResponseDto[]; total: number }> {
+  findAll(
+    @Query() query: FilteredPaginationQueryDto,
+  ): Promise<{ courses: CourseResponseDto[]; total: number }> {
     return this.coursesService.findAll(query.page, query.limit, query);
   }
 
