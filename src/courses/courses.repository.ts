@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { Repository } from 'typeorm';
+import type { Repository, SelectQueryBuilder } from 'typeorm';
 import type { CreateCourseDto } from './dto/create-course.dto';
 import type { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 
 @Injectable()
 export class CoursesRepository {
@@ -12,34 +13,67 @@ export class CoursesRepository {
     private courseRepository: Repository<Course>,
   ) {}
 
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<Course>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<Course> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('course.createdAt >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('course.createdAt <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
+  }
+
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
     const course = this.courseRepository.create(createCourseDto);
     return await this.courseRepository.save(course);
   }
 
-  async findAll(): Promise<Course[]> {
-    return await this.courseRepository.find({
-      relations: ['professor', 'category'],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        professorId: true,
-        categoryId: true,
-        createdAt: true,
-        updatedAt: true,
-        professor: {
-          id: true,
-          name: true,
-          email: true,
-        },
-        category: {
-          id: true,
-          name: true,
-          color: true,
-        },
-      },
-    });
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ courses: Course[]; total: number }> {
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.professor', 'professor')
+      .leftJoinAndSelect('course.category', 'category')
+      .select([
+        'course.id',
+        'course.title',
+        'course.description',
+        'course.professorId',
+        'course.categoryId',
+        'course.createdAt',
+        'course.updatedAt',
+        'professor.id',
+        'professor.name',
+        'professor.email',
+        'category.id',
+        'category.name',
+        'category.color',
+      ])
+      .orderBy('course.createdAt', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+    }
+
+    const [courses, total] = await queryBuilder.getManyAndCount();
+    return { courses, total };
   }
 
   async findByProfessorId(professorId: string): Promise<Course[]> {
@@ -167,29 +201,36 @@ export class CoursesRepository {
     return count > 0;
   }
 
-  async findByCategoryId(categoryId: string): Promise<Course[]> {
-    return await this.courseRepository.find({
-      where: { categoryId },
-      relations: ['professor', 'category'],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        professorId: true,
-        categoryId: true,
-        createdAt: true,
-        updatedAt: true,
-        professor: {
-          id: true,
-          name: true,
-          email: true,
-        },
-        category: {
-          id: true,
-          name: true,
-          color: true,
-        },
-      },
-    });
+  async findByCategoryId(
+    categoryId: string,
+    filters?: DateRangeFilterDto,
+  ): Promise<Course[]> {
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.professor', 'professor')
+      .leftJoinAndSelect('course.category', 'category')
+      .where('course.categoryId = :categoryId', { categoryId })
+      .select([
+        'course.id',
+        'course.title',
+        'course.description',
+        'course.professorId',
+        'course.categoryId',
+        'course.createdAt',
+        'course.updatedAt',
+        'professor.id',
+        'professor.name',
+        'professor.email',
+        'category.id',
+        'category.name',
+        'category.color',
+      ])
+      .orderBy('course.createdAt', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    return queryBuilder.getMany();
   }
 }

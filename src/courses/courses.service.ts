@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { Course } from './entities/course.entity';
 import { CourseResponseDto } from './dto/course-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { CoursesRepository } from './courses.repository';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    private readonly coursesRepository: CoursesRepository,
   ) {}
 
   async create(createCourseDto: {
@@ -20,41 +23,47 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
-  async findAll(): Promise<CourseResponseDto[]> {
-  const courses = await this.courseRepository.find({
-    relations: ['modules', 'professor', 'category'],
-  });
-  return courses.map(course => ({
-    id: course.id,
-    title: course.title,
-    description: course.description,
-    professor: {
-      id: course.professor.id,
-      name: course.professor.name,
-      email: course.professor.email,
-      role: course.professor.role,
-      createdAt: course.professor.createdAt,
-      updatedAt: course.professor.updatedAt,
-    },
-    modules: course.modules?.map(module => ({
-      id: module.id,
-      title: module.title,
-      createdAt: module.created_at,
-      updatedAt: module.updated_at,
-    })),
-    category: course.category ? {
-      id: course.category.id,
-      name: course.category.name,
-      description: course.category.description,
-      color: course.category.color,
-      isActive: course.category.isActive,
-      createdAt: course.category.created_at,
-      updatedAt: course.category.updated_at,
-    } : undefined,
-    createdAt: course.createdAt,
-    updatedAt: course.updatedAt,
-    averageRating: course.acquireReviewAverageRating(),
-  }));
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ courses: CourseResponseDto[]; total: number }> {
+    const { courses, total } = await this.coursesRepository.findAll(page, limit, filters);
+    
+    return {
+      courses: courses.map(course => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        professor: {
+          id: course.professor.id,
+          name: course.professor.name,
+          email: course.professor.email,
+          role: course.professor.role,
+          createdAt: course.professor.createdAt,
+          updatedAt: course.professor.updatedAt,
+        },
+        modules: course.modules?.map(module => ({
+          id: module.id,
+          title: module.title,
+          createdAt: module.created_at,
+          updatedAt: module.updated_at,
+        })),
+        category: course.category ? {
+          id: course.category.id,
+          name: course.category.name,
+          description: course.category.description,
+          color: course.category.color,
+          isActive: course.category.isActive,
+          createdAt: course.category.created_at,
+          updatedAt: course.category.updated_at,
+        } : null,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        averageRating: course.acquireReviewAverageRating(),
+      })),
+      total,
+    };
   }
 
   async findOne(id: string): Promise<CourseResponseDto> {

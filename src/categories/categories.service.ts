@@ -8,6 +8,7 @@ import { Category } from '../entities/category.entity';
 import { CategoriesRepository } from './categories.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -25,8 +26,12 @@ export class CategoriesService {
     return await this.categoriesRepository.create(createCategoryDto);
   }
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoriesRepository.findAll();
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ categories: Category[]; total: number }> {
+    return await this.categoriesRepository.findAll(page, limit, filters);
   }
 
   async findById(id: string): Promise<Category> {

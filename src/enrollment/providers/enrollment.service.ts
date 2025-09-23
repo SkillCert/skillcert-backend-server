@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../../common/dto/date-range-filter.dto';
 import { Course } from '../../courses/entities/course.entity';
-import { EnrollmentResponseDto ,UserEnrollmentsResponseDto} from '../dto/enrollment-response.dto';
 import { User } from '../../users/entities/user.entity';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
+import {
+  EnrollmentResponseDto,
+  UserEnrollmentsResponseDto,
+} from '../dto/enrollment-response.dto';
 import { Enrollment } from '../entities/enrollment.entity';
-
 
 @Injectable()
 export class EnrollmentService {
@@ -28,6 +31,25 @@ export class EnrollmentService {
       enrolledAt: enrollment.enrolledAt,
       isActive: enrollment.isActive,
     };
+  }
+
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<Enrollment>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<Enrollment> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('enrollment.enrolledAt >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('enrollment.enrolledAt <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
   }
 
   async enroll(dto: CreateEnrollmentDto): Promise<EnrollmentResponseDto> {
@@ -54,11 +76,22 @@ export class EnrollmentService {
     return this.toResponseDto(full);
   }
 
-  async getUserEnrollments(userId: string): Promise<UserEnrollmentsResponseDto> {
-    const enrollments = await this.enrollmentRepo.find({
-      where: { user: { id: userId } },
-      relations: ['course', 'user'],
-    });
+  async getUserEnrollments(
+    userId: string,
+    filters?: DateRangeFilterDto,
+  ): Promise<UserEnrollmentsResponseDto> {
+    const queryBuilder = this.enrollmentRepo
+      .createQueryBuilder('enrollment')
+      .leftJoinAndSelect('enrollment.course', 'course')
+      .leftJoinAndSelect('enrollment.user', 'user')
+      .where('user.id = :userId', { userId })
+      .orderBy('enrollment.enrolledAt', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    const enrollments = await queryBuilder.getMany();
 
     return {
       userId,
@@ -66,9 +99,35 @@ export class EnrollmentService {
     };
   }
 
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ enrollments: EnrollmentResponseDto[]; total: number }> {
+    const queryBuilder = this.enrollmentRepo
+      .createQueryBuilder('enrollment')
+      .leftJoinAndSelect('enrollment.user', 'user')
+      .leftJoinAndSelect('enrollment.course', 'course')
+      .orderBy('enrollment.enrolledAt', 'DESC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+    }
+
+    const [enrollments, total] = await queryBuilder.getManyAndCount();
+    return {
+      enrollments: enrollments.map(this.toResponseDto),
+      total,
+    };
+  }
+
   async removeEnrollment(enrollmentId: string): Promise<{ message: string }> {
     await this.enrollmentRepo.delete(enrollmentId);
     return { message: `Enrollment ${enrollmentId} removed successfully` };
   }
-
 }
