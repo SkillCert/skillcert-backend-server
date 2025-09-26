@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Answer } from '../answer/entities/answer.entity';
+import { Answer } from '../answer/entities/answers.entity';
 import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import { Question, QuestionType } from '../question/entities/question.entity';
 import { User } from '../users/entities/user.entity';
