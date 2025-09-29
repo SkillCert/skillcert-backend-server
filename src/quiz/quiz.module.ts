@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Answer } from '../answer/entities/answer.entity';
+import { Answer } from '../answer/entities/answers.entity';
 import { Question } from '../question/entities/question.entity';
 import { Quiz } from './entities/quiz.entity';
 import { QuizController } from './quiz.controller';

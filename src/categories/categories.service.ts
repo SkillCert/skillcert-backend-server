@@ -14,7 +14,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoriesService {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
     // Check if category name already exists
     const nameExists = await this.categoriesRepository.nameExists(
       createCategoryDto.name,
@@ -34,7 +34,7 @@ export class CategoriesService {
     return await this.categoriesRepository.findAll(page, limit, filters);
   }
 
-  async findById(id: string): Promise<Category> {
+  async findCategoryById(id: string): Promise<Category> {
     if (!id) {
       throw new BadRequestException('Category ID is required');
     }
@@ -47,7 +47,7 @@ export class CategoriesService {
     return category;
   }
 
-  async update(
+  async updateCategory(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
@@ -83,7 +83,7 @@ export class CategoriesService {
     return updatedCategory;
   }
 
-  async delete(id: string): Promise<void> {
+  async deleteCategory(id: string): Promise<void> {
     if (!id) {
       throw new BadRequestException('Category ID is required');
     }
@@ -115,7 +115,7 @@ export class CategoriesService {
     return await this.categoriesRepository.findActiveCategories();
   }
 
-  async getCoursesCount(id: string): Promise<number> {
+  async getCategoryCoursesCount(id: string): Promise<number> {
     if (!id) {
       throw new BadRequestException('Category ID is required');
     }

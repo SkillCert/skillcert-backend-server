@@ -57,16 +57,9 @@ export class CoursesRepository {
         'professor.id',
         'professor.name',
         'professor.email',
-        'professor.role',
-        'professor.createdAt',
-        'professor.updatedAt',
         'category.id',
         'category.name',
-        'category.description',
         'category.color',
-        'category.isActive',
-        'category.created_at',
-        'category.updated_at',
       ])
       .orderBy('course.createdAt', 'DESC');
 
@@ -125,18 +118,11 @@ export class CoursesRepository {
           id: true,
           name: true,
           email: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
         },
         category: {
           id: true,
           name: true,
-          description: true,
           color: true,
-          isActive: true,
-          created_at: true,
-          updated_at: true,
         },
       },
     });
@@ -192,18 +178,11 @@ export class CoursesRepository {
           id: true,
           name: true,
           email: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
         },
         category: {
           id: true,
           name: true,
-          description: true,
           color: true,
-          isActive: true,
-          created_at: true,
-          updated_at: true,
         },
       },
     });
@@ -242,16 +221,9 @@ export class CoursesRepository {
         'professor.id',
         'professor.name',
         'professor.email',
-        'professor.role',
-        'professor.createdAt',
-        'professor.updatedAt',
         'category.id',
         'category.name',
-        'category.description',
         'category.color',
-        'category.isActive',
-        'category.created_at',
-        'category.updated_at',
       ])
       .orderBy('course.createdAt', 'DESC');
 

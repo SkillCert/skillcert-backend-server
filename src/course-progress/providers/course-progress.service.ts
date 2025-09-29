@@ -28,7 +28,7 @@ export class CourseProgressService {
     private quizAttemptRepo: Repository<QuizAttempt>,
   ) { }
   
-  private toResponseDto(progress: CourseProgress): CourseProgressResponseDto {
+  private responseToDto(progress: CourseProgress): CourseProgressResponseDto {
     return {
       enrollmentId: progress.enrollment.id,
       lessonId: progress.lesson.id,
@@ -73,20 +73,16 @@ export class CourseProgressService {
       progress.status = dto.status;
     }
     const saved = await this.progressRepo.save(progress);
-    return this.toResponseDto(saved);
+    return this.responseToDto(saved);
   }
   private async checkQuizRequirements(userId: string, lessonId: string): Promise<void> {
-    // Find all quizzes for this lesson
     const quizzes = await this.quizRepo.find({
       where: { lesson_id: lessonId },
     });
 
-    // If there are no quizzes, lesson can be completed without quiz requirements
     if (quizzes.length === 0) {
       return;
     }
-
-    // Check if user has passed all quizzes for this lesson
     for (const quiz of quizzes) {
       const attempt = await this.quizAttemptRepo.findOne({
         where: {
@@ -103,12 +99,12 @@ export class CourseProgressService {
     }
   }
 
-  async getProgress(enrollmentId: string):Promise<CourseProgressResponseDto[]> {
+  async getCourseProgress(enrollmentId: string):Promise<CourseProgressResponseDto[]> {
     const progress = await this.progressRepo.find({
       where: { enrollment: { id: enrollmentId } },
       relations: ['lesson', 'enrollment'],
     });
-    return progress.map(this.toResponseDto);
+    return progress.map(this.responseToDto);
   }
 
   async getCompletionRate(enrollmentId: string): Promise<CompletionRateResponseDto> {
@@ -127,7 +123,6 @@ export class CourseProgressService {
       },
     });
 
-    const completionRate = (completed / total) * PERCENTAGE_MULTIPLIER;
 
     return {
       enrollmentId,

@@ -12,7 +12,9 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { FilteredPaginationQueryDto } from '../../common';
 import { CreateCourseDto } from '../dto/create-course.dto';
+import { CourseResponseDto } from '../dto/course-response.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import type { Course } from '../entities/course.entity';
 import { CoursesService } from '../providers/courses.service';
@@ -37,23 +39,23 @@ export class CoursesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query('professorId') professorId?: string): Promise<{
+  async findAll(
+    @Query() query: FilteredPaginationQueryDto,
+  ): Promise<{
     message: string;
-    data: Course[];
-    count: number;
+    data: CourseResponseDto[];
+    total: number;
   }> {
-    let courses: Course[];
-
-    if (professorId) {
-      courses = await this.coursesService.findByProfessorId(professorId);
-    } else {
-      courses = await this.coursesService.findAll();
-    }
+    const result = await this.coursesService.findAll(
+      query.page,
+      query.limit,
+      query,
+    );
 
     return {
       message: 'Courses retrieved successfully',
-      data: courses,
-      count: courses.length,
+      data: result.courses,
+      total: result.total,
     };
   }
 
@@ -114,12 +116,18 @@ export class CoursesController {
 
   @Get('category/:categoryId')
   @HttpCode(HttpStatus.OK)
-  async findByCategoryId(@Param('categoryId') categoryId: string): Promise<{
+  async findByCategoryId(
+    @Param('categoryId') categoryId: string,
+    @Query() query: FilteredPaginationQueryDto,
+  ): Promise<{
     message: string;
     data: Course[];
     count: number;
   }> {
-    const courses = await this.coursesService.findByCategoryId(categoryId);
+    const courses = await this.coursesService.findByCategoryId(
+      categoryId,
+      query,
+    );
     return {
       message: 'Category courses retrieved successfully',
       data: courses,

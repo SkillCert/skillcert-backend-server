@@ -3,9 +3,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
-import { AppModule } from './app.module';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
 import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout.interceptor';
+import { ConfigService } from '@nestjs/config';
 
 
 async function bootstrap() {
