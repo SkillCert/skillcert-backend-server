@@ -46,7 +46,6 @@ export class CoursesRepository {
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.professor', 'professor')
       .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.modules', 'modules')
       .select([
         'course.id',
         'course.title',
@@ -68,10 +67,6 @@ export class CoursesRepository {
         'category.isActive',
         'category.created_at',
         'category.updated_at',
-        'modules.id',
-        'modules.title',
-        'modules.created_at',
-        'modules.updated_at',
       ])
       .orderBy('course.createdAt', 'DESC');
 
@@ -130,32 +125,6 @@ export class CoursesRepository {
           id: true,
           name: true,
           email: true,
-        },
-        category: {
-          id: true,
-          name: true,
-          color: true,
-        },
-      },
-    });
-  }
-
-  async findByIdOrThrow(id: string, onNotFound?: () => never): Promise<Course> {
-    const course = await this.courseRepository.findOne({
-      where: { id },
-      relations: ['professor', 'category', 'modules'],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        professorId: true,
-        categoryId: true,
-        createdAt: true,
-        updatedAt: true,
-        professor: {
-          id: true,
-          name: true,
-          email: true,
           role: true,
           createdAt: true,
           updatedAt: true,
@@ -169,15 +138,12 @@ export class CoursesRepository {
           created_at: true,
           updated_at: true,
         },
-        modules: {
-          id: true,
-          title: true,
-          created_at: true,
-          updated_at: true,
-        },
       },
     });
+  }
 
+  async findByIdOrThrow(id: string, onNotFound?: () => never): Promise<Course> {
+    const course = await this.findById(id);
     if (course) {
       return course;
     }
@@ -194,42 +160,7 @@ export class CoursesRepository {
     updateCourseDto: UpdateCourseDto,
   ): Promise<Course | null> {
     await this.courseRepository.update(id, updateCourseDto);
-    return await this.courseRepository.findOne({
-      where: { id },
-      relations: ['professor', 'category', 'modules'],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        professorId: true,
-        categoryId: true,
-        createdAt: true,
-        updatedAt: true,
-        professor: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        category: {
-          id: true,
-          name: true,
-          description: true,
-          color: true,
-          isActive: true,
-          created_at: true,
-          updated_at: true,
-        },
-        modules: {
-          id: true,
-          title: true,
-          created_at: true,
-          updated_at: true,
-        },
-      },
-    });
+    return await this.findById(id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -261,11 +192,18 @@ export class CoursesRepository {
           id: true,
           name: true,
           email: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
         },
         category: {
           id: true,
           name: true,
+          description: true,
           color: true,
+          isActive: true,
+          created_at: true,
+          updated_at: true,
         },
       },
     });
@@ -304,9 +242,16 @@ export class CoursesRepository {
         'professor.id',
         'professor.name',
         'professor.email',
+        'professor.role',
+        'professor.createdAt',
+        'professor.updatedAt',
         'category.id',
         'category.name',
+        'category.description',
         'category.color',
+        'category.isActive',
+        'category.created_at',
+        'category.updated_at',
       ])
       .orderBy('course.createdAt', 'DESC');
 

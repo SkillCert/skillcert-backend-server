@@ -1,18 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
-import { UserResponseDto } from '../users/dto/user-response.dto';
 import { CoursesRepository } from './courses.repository';
 import { CourseResponseDto } from './dto/course-response.dto';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly coursesRepository: CoursesRepository) {}
+  constructor(
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
+    private readonly coursesRepository: CoursesRepository,
+  ) {}
 
-  async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    return await this.coursesRepository.create(createCourseDto);
+  async create(createCourseDto: {
+    title: string;
+    description?: string;
+  }): Promise<Course> {
+    const course = this.courseRepository.create(createCourseDto);
+    return await this.courseRepository.save(course);
   }
 
   async findAll(
@@ -65,8 +72,13 @@ export class CoursesService {
   }
 
   async findOne(id: string): Promise<CourseResponseDto> {
-    const course = await this.coursesRepository.findByIdOrThrow(id);
-
+    const course = await this.courseRepository.findOne({
+      where: { id },
+      relations: ['modules', 'professor', 'category'],
+    });
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
+    }
     return {
       id: course.id,
       title: course.title,
@@ -104,57 +116,20 @@ export class CoursesService {
 
   async update(
     id: string,
-    updateCourseDto: UpdateCourseDto,
+    updateCourseDto: { title?: string; description?: string },
   ): Promise<CourseResponseDto> {
-    const updatedCourse = await this.coursesRepository.update(
-      id,
-      updateCourseDto,
-    );
-
-    if (!updatedCourse) {
+    // Persist changes then reuse findOne for consistent mapping
+    const existing = await this.courseRepository.findOne({ where: { id } });
+    if (!existing) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
-
-    const professorResponse: UserResponseDto = {
-      id: updatedCourse.professor.id,
-      name: updatedCourse.professor.name,
-      email: updatedCourse.professor.email,
-      role: updatedCourse.professor.role,
-      createdAt: updatedCourse.professor.createdAt,
-      updatedAt: updatedCourse.professor.updatedAt,
-    };
-
-    return {
-      id: updatedCourse.id,
-      title: updatedCourse.title,
-      description: updatedCourse.description,
-      professor: professorResponse,
-      modules: updatedCourse.modules?.map((module) => ({
-        id: module.id,
-        title: module.title,
-        createdAt: module.created_at,
-        updatedAt: module.updated_at,
-      })),
-      category: updatedCourse.category
-        ? {
-            id: updatedCourse.category.id,
-            name: updatedCourse.category.name,
-            description: updatedCourse.category.description,
-            color: updatedCourse.category.color,
-            isActive: updatedCourse.category.isActive,
-            createdAt: updatedCourse.category.created_at,
-            updatedAt: updatedCourse.category.updated_at,
-          }
-        : undefined,
-      createdAt: updatedCourse.createdAt,
-      updatedAt: updatedCourse.updatedAt,
-      averageRating: updatedCourse.acquireReviewAverageRating(),
-    };
+    await this.courseRepository.update(id, updateCourseDto);
+    return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    const deleted = await this.coursesRepository.delete(id);
-    if (!deleted) {
+    const result = await this.courseRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
   }

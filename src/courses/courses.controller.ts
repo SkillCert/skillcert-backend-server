@@ -26,8 +26,6 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CoursesService } from './courses.service';
 import { CourseResponseDto } from './dto/course-response.dto';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
 
 @Controller('courses')
@@ -69,7 +67,9 @@ export class CoursesController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createCourseDto: CreateCourseDto): Promise<Course> {
+  create(
+    @Body() createCourseDto: { title: string; description?: string },
+  ): Promise<Course> {
     return this.coursesService.create(createCourseDto);
   }
 
@@ -217,7 +217,7 @@ export class CoursesController {
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateCourseDto: UpdateCourseDto,
+    @Body() updateCourseDto: { title?: string; description?: string },
   ): Promise<CourseResponseDto> {
     return this.coursesService.update(id, updateCourseDto);
   }
