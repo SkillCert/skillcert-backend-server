@@ -1,26 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { CoursesRepository } from './courses.repository';
 import { CourseResponseDto } from './dto/course-response.dto';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
 
 @Injectable()
 export class CoursesService {
-  constructor(
-    @InjectRepository(Course)
-    private readonly courseRepository: Repository<Course>,
-    private readonly coursesRepository: CoursesRepository,
-  ) {}
+  constructor(private readonly coursesRepository: CoursesRepository) {}
 
-  async create(createCourseDto: {
-    title: string;
-    description?: string;
-  }): Promise<Course> {
-    const course = this.courseRepository.create(createCourseDto);
-    return await this.courseRepository.save(course);
+  async create(createCourseDto: CreateCourseDto): Promise<Course> {
+    return await this.coursesRepository.create(createCourseDto);
   }
 
   async findAll(
@@ -63,7 +55,7 @@ export class CoursesService {
               createdAt: course.category.created_at,
               updatedAt: course.category.updated_at,
             }
-          : null,
+          : undefined,
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,
         averageRating: course.acquireReviewAverageRating(),
@@ -73,13 +65,8 @@ export class CoursesService {
   }
 
   async findOne(id: string): Promise<CourseResponseDto> {
-    const course = await this.courseRepository.findOne({
-      where: { id },
-      relations: ['modules', 'professor', 'category'],
-    });
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
-    }
+    const course = await this.coursesRepository.findByIdOrThrow(id);
+
     return {
       id: course.id,
       title: course.title,
@@ -117,11 +104,16 @@ export class CoursesService {
 
   async update(
     id: string,
-    updateCourseDto: { title?: string; description?: string },
+    updateCourseDto: UpdateCourseDto,
   ): Promise<CourseResponseDto> {
-    const course = await this.findOne(id);
-    Object.assign(course, updateCourseDto);
-    const updatedCourse = await this.courseRepository.save(course);
+    const updatedCourse = await this.coursesRepository.update(
+      id,
+      updateCourseDto,
+    );
+
+    if (!updatedCourse) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
+    }
 
     const professorResponse: UserResponseDto = {
       id: updatedCourse.professor.id,
@@ -131,6 +123,7 @@ export class CoursesService {
       createdAt: updatedCourse.professor.createdAt,
       updatedAt: updatedCourse.professor.updatedAt,
     };
+
     return {
       id: updatedCourse.id,
       title: updatedCourse.title,
@@ -139,8 +132,8 @@ export class CoursesService {
       modules: updatedCourse.modules?.map((module) => ({
         id: module.id,
         title: module.title,
-        createdAt: module.createdAt,
-        updatedAt: module.updatedAt,
+        createdAt: module.created_at,
+        updatedAt: module.updated_at,
       })),
       category: updatedCourse.category
         ? {
@@ -149,8 +142,8 @@ export class CoursesService {
             description: updatedCourse.category.description,
             color: updatedCourse.category.color,
             isActive: updatedCourse.category.isActive,
-            createdAt: updatedCourse.category.createdAt,
-            updatedAt: updatedCourse.category.updatedAt,
+            createdAt: updatedCourse.category.created_at,
+            updatedAt: updatedCourse.category.updated_at,
           }
         : undefined,
       createdAt: updatedCourse.createdAt,
@@ -160,8 +153,8 @@ export class CoursesService {
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.courseRepository.delete(id);
-    if (result.affected === 0) {
+    const deleted = await this.coursesRepository.delete(id);
+    if (!deleted) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
   }
