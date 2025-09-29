@@ -13,8 +13,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FilteredPaginationQueryDto } from '../../common';
-import { CreateCourseDto } from '../dto/create-course.dto';
 import { CourseResponseDto } from '../dto/course-response.dto';
+import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import type { Course } from '../entities/course.entity';
 import { CoursesService } from '../providers/courses.service';
@@ -39,9 +39,7 @@ export class CoursesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(
-    @Query() query: FilteredPaginationQueryDto,
-  ): Promise<{
+  async findAll(@Query() query: FilteredPaginationQueryDto): Promise<{
     message: string;
     data: CourseResponseDto[];
     total: number;

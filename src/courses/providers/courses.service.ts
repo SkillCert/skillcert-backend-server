@@ -5,13 +5,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DateRangeFilterDto } from '../../common/dto/date-range-filter.dto';
 import { CategoriesService } from '../../categories/categories.service';
+import { DateRangeFilterDto } from '../../common/dto/date-range-filter.dto';
 import { UserRole } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/providers/users.service';
 import { CoursesRepository } from '../courses.repository';
-import { CreateCourseDto } from '../dto/create-course.dto';
 import { CourseResponseDto } from '../dto/course-response.dto';
+import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import type { Course } from '../entities/course.entity';
 
