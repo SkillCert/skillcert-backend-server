@@ -2,11 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
-import { EnrollmentResponseDto ,UserEnrollmentsResponseDto} from '../dto/enrollment-response.dto';
 import { User } from '../../users/entities/user.entity';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
+import {
+  EnrollmentResponseDto,
+  UserEnrollmentsResponseDto,
+} from '../dto/enrollment-response.dto';
 import { Enrollment } from '../entities/enrollment.entity';
-
 
 @Injectable()
 export class EnrollmentService {
@@ -54,7 +56,9 @@ export class EnrollmentService {
     return this.toResponseDto(full);
   }
 
-  async getUserEnrollments(userId: string): Promise<UserEnrollmentsResponseDto> {
+  async getUserEnrollments(
+    userId: string,
+  ): Promise<UserEnrollmentsResponseDto> {
     const enrollments = await this.enrollmentRepo.find({
       where: { user: { id: userId } },
       relations: ['course', 'user'],
@@ -70,5 +74,4 @@ export class EnrollmentService {
     await this.enrollmentRepo.delete(enrollmentId);
     return { message: `Enrollment ${enrollmentId} removed successfully` };
   }
-
 }

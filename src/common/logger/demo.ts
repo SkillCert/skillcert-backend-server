@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { CentralizedLoggerService } from './services/centralized-logger.service';
 
 async function demonstrateLogger() {
@@ -25,7 +26,10 @@ async function demonstrateLogger() {
 
   // Error logging with stack trace
   try {
-    throw new Error('Simulated database connection error');
+    throw new HttpException(
+      'Simulated database connection error',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   } catch (error) {
     userLogger.error('Database connection failed', error as Error, {
       operation: 'database_connect',

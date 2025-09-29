@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ModulesService } from './modules.service';
-import { Module } from './entities/module.entity';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { Module } from './entities/module.entity';
+import { ModulesService } from './modules.service';
 
 type MockRepository = Partial<Record<keyof Repository<Module>, jest.Mock>>;
 

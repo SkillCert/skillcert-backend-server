@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Reference } from '../entities/reference.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
-import { UpdateReferenceDto } from './dto/update-reference.dto';
 import { ReferenceResponseDto } from './dto/reference-response.dto';
+import { UpdateReferenceDto } from './dto/update-reference.dto';
 
 @Injectable()
 export class ReferencesService {
@@ -43,8 +43,9 @@ export class ReferencesService {
     };
   }
 
-
-  async create(createReferenceDto: CreateReferenceDto): Promise<ReferenceResponseDto> {
+  async create(
+    createReferenceDto: CreateReferenceDto,
+  ): Promise<ReferenceResponseDto> {
     const reference = this.referencesRepository.create(createReferenceDto);
     const saved = await this.referencesRepository.save(reference);
     return this.toResponseDto(saved);
@@ -52,9 +53,9 @@ export class ReferencesService {
 
   async findAll(): Promise<ReferenceResponseDto[]> {
     const references = await this.referencesRepository.find({
-    relations: ['module', 'lesson'],
-  });
-  return references.map(this.toResponseDto);
+      relations: ['module', 'lesson'],
+    });
+    return references.map(this.toResponseDto);
   }
 
   async findOne(id: string): Promise<ReferenceResponseDto> {
@@ -75,7 +76,7 @@ export class ReferencesService {
       where: { module_id: moduleId },
       relations: ['module', 'lesson'],
     });
-    return references.map(ref => this.toResponseDto(ref));
+    return references.map((ref) => this.toResponseDto(ref));
   }
 
   async findByLesson(lessonId: string): Promise<ReferenceResponseDto[]> {
@@ -83,9 +84,9 @@ export class ReferencesService {
       where: { lesson_id: lessonId },
       relations: ['module', 'lesson'],
     });
-    return references.map(ref => this.toResponseDto(ref));
-  } 
-  
+    return references.map((ref) => this.toResponseDto(ref));
+  }
+
   async update(
     id: string,
     updateReferenceDto: UpdateReferenceDto,

@@ -21,12 +21,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  LessonResource,
-  ResourceType,
-} from '../entities/lesson-resource.entity';
-import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
+import { ResourceType } from '../entities/lesson-resource.entity';
 import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 import { LessonResourcesService } from './lesson-resources.service';
 

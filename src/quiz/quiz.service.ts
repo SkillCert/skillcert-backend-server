@@ -11,14 +11,13 @@ import { CentralizedLoggerService } from '../common/logger/services/centralized-
 import { Question, QuestionType } from '../question/entities/question.entity';
 import { User } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { QuizResponseDto } from './dto/quiz-response.dto';
 import { QuestionResultDto, QuizResultDto } from './dto/quiz-result.dto';
 import { QuestionResponseDto, SubmitQuizDto } from './dto/submit-quiz.dto';
-import { PERCENTAGE_MULTIPLIER, QUIZ_PASSING_THRESHOLD } from '../common/constants';
 import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
-import { QuizResponseDto } from './dto/quiz-response.dto';
 
 @Injectable()
 export class QuizService {
@@ -48,20 +47,22 @@ export class QuizService {
       title: quiz.title,
       description: quiz.description,
       lesson_id: quiz.lesson_id,
-      questions: quiz.questions?.map((q) => ({
-        id: q.id,
-        text: q.text,
-        type: q.type,
-        answers: q.answers?.map((a) => ({
-          id: a.id,
-          text: a.text,
-          correct: a.correct,
-          created_at: a.created_at,
-          updated_at: a.updated_at,
+      questions:
+        quiz.questions?.map((q) => ({
+          id: q.id,
+          text: q.text,
+          type: q.type,
+          answers:
+            q.answers?.map((a) => ({
+              id: a.id,
+              text: a.text,
+              correct: a.correct,
+              created_at: a.created_at,
+              updated_at: a.updated_at,
+            })) || [],
+          created_at: q.created_at,
+          updated_at: q.updated_at,
         })) || [],
-        created_at: q.created_at,
-        updated_at: q.updated_at,
-      })) || [],
       created_at: quiz.created_at,
       updated_at: quiz.updated_at,
     };

@@ -3,7 +3,7 @@ export class EnrollmentResponseDto {
   id: string;
   userId: string;
   courseId: string;
-  courseTitle?: string;   // optional, if you want to expose course info
+  courseTitle?: string; // optional, if you want to expose course info
   enrolledAt: Date;
   isActive: boolean;
 }
