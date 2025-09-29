@@ -61,7 +61,7 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
-  getDashboard() {
+  getDashboardPage() {
     return {
       message: 'Welcome to Admin Dashboard',
       data: {
@@ -177,7 +177,7 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
-  startMaintenance() {
+  startMaintenanceTime() {
     return {
       message: 'System maintenance started - Admin access required',
       data: {
@@ -213,12 +213,9 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUser(@Param('id') id: string) {
-    // TODO: Implement actual user deletion logic using the id parameter
-    console.log(`Deleting user with ID: ${id}`);
+  deleteUserById(@Param('id') id: string) {
     return;
   }
-
   @Get('analytics')
   @ApiOperation({ summary: 'Get system analytics data' })
   @ApiResponse({
@@ -261,7 +258,7 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
   @HttpCode(HttpStatus.OK)
-  getAnalytics() {
+  getDataAnalytics() {
     return {
       message: 'Analytics data - Admin/Moderator access required',
       data: {

@@ -19,7 +19,7 @@ export class ObjectivesService {
     private courseRepository: Repository<Course>,
   ) {}
 
-  async create(createObjectiveDto: CreateObjectiveDto): Promise<Objective> {
+  async createObjetive(createObjectiveDto: CreateObjectiveDto): Promise<Objective> {
     // Verify course exists
     const course = await this.courseRepository.findOne({
       where: { id: createObjectiveDto.courseId },
@@ -30,8 +30,6 @@ export class ObjectivesService {
         `Course with ID ${createObjectiveDto.courseId} not found`,
       );
     }
-
-    // Set default order if not provided
     if (createObjectiveDto.order === undefined) {
       const maxOrder = await this.objectiveRepository
         .createQueryBuilder('objective')
@@ -48,7 +46,7 @@ export class ObjectivesService {
     return await this.objectiveRepository.save(objective);
   }
 
-  async findAll(): Promise<Objective[]> {
+  async findAllObjectives(): Promise<Objective[]> {
     return await this.objectiveRepository.find({
       relations: ['course'],
       order: { courseId: 'ASC', order: 'ASC' },
@@ -72,7 +70,7 @@ export class ObjectivesService {
     });
   }
 
-  async findOne(id: string): Promise<Objective> {
+  async findOneObjective(id: string): Promise<Objective> {
     const objective = await this.objectiveRepository.findOne({
       where: { id },
       relations: ['course'],
@@ -85,11 +83,11 @@ export class ObjectivesService {
     return objective;
   }
 
-  async update(
+  async updateObjective(
     id: string,
     updateObjectiveDto: UpdateObjectiveDto,
   ): Promise<Objective> {
-    const objective = await this.findOne(id);
+    const objective = await this.findOneObjective(id);
 
     // If courseId is being updated, verify the new course exists
     if (
@@ -112,7 +110,7 @@ export class ObjectivesService {
   }
 
   async remove(id: string): Promise<void> {
-    const objective = await this.findOne(id);
+    const objective = await this.findOneObjective(id);
     await this.objectiveRepository.remove(objective);
   }
 

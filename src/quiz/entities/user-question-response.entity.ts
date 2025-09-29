@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Answer } from '../../answer/entities/answer.entity';
-import { Question } from '../../question/entities/question.entity';
 import { QuizAttempt } from './quiz-attempt.entity';
+import { Question } from '../../question/entities/question.entity';
+import { Answer } from '../../answer/entities/answers.entity';
 
 @Entity('user_question_responses')
 export class UserQuestionResponse {

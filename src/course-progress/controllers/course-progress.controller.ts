@@ -8,7 +8,7 @@ import { CourseProgressService } from '../providers/course-progress.service';
 export class CourseProgressController {
   constructor(private readonly progressService: CourseProgressService) {}
 
-  @Post('update')
+  @Post('update-course-progress')
   @ApiOperation({ summary: 'Update course progress' })
   @ApiResponse({ status: 201, description: 'Progress updated successfully' })
   @ApiResponse({
@@ -27,15 +27,15 @@ export class CourseProgressController {
   }
 
   @Get(':enrollmentId')
-  @ApiOperation({ summary: 'Get course progress by enrollment ID' })
-  @ApiResponse({ status: 200, description: 'Progress retrieved successfully' })
+  @ApiOperation({ summary: 'get course progress by enrollment ID' })
+  @ApiResponse({ status: 200, description: 'Progress get successfully' })
   @ApiResponse({
     status: 400,
     description: 'Bad request',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Enrollment not found' },
+        message: { type: 'string', example: 'Enrollment on course not found' },
         statusCode: { type: 'number', example: 400 },
       },
     },

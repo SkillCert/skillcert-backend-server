@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Answer } from '../../answer/entities/answer.entity';
+import { Answer } from '../../answer/entities/answers.entity';
 import { Quiz } from '../../quiz/entities/quiz.entity';
 
 export enum QuestionType {
