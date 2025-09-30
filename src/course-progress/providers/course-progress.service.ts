@@ -1,17 +1,25 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PERCENTAGE_MULTIPLIER } from '../../common/constants';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';
-import { Quiz } from '../../quiz/entities/quiz.entity';
 import { QuizAttempt } from '../../quiz/entities/quiz-attempt.entity';
+import { Quiz } from '../../quiz/entities/quiz.entity';
+import {
+  AnalyticsResponseDto,
+  CompletionRateResponseDto,
+  CourseProgressResponseDto,
+} from '../dto/course-progress.dto';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
-import { CourseProgressResponseDto, CompletionRateResponseDto, AnalyticsResponseDto } from '../dto/course-progress.dto';
 import {
   CourseProgress,
   ProgressStatus,
 } from '../entities/course-progress.entity';
-import { PERCENTAGE_MULTIPLIER } from '../../common/constants';
 
 @Injectable()
 export class CourseProgressService {
@@ -37,8 +45,9 @@ export class CourseProgressService {
     };
   }
 
-
-  async updateProgress(dto: UpdateProgressDto):Promise<CourseProgressResponseDto> {
+  async updateProgress(
+    dto: UpdateProgressDto,
+  ): Promise<CourseProgressResponseDto> {
     const enrollment = await this.enrollmentRepo.findOne({
       where: { id: dto.enrollmentId },
       relations: ['user'],
@@ -93,7 +102,7 @@ export class CourseProgressService {
 
       if (!attempt || !attempt.passed) {
         throw new BadRequestException(
-          `Cannot complete lesson. You must pass the quiz "${quiz.title}" first.`
+          `Cannot complete lesson. You must pass the quiz "${quiz.title}" first.`,
         );
       }
     }
@@ -107,7 +116,9 @@ export class CourseProgressService {
     return progress.map(this.responseToDto);
   }
 
-  async getCompletionRate(enrollmentId: string): Promise<CompletionRateResponseDto> {
+  async getCompletionRate(
+    enrollmentId: string,
+  ): Promise<CompletionRateResponseDto> {
     const total = await this.progressRepo.count({
       where: { enrollment: { id: enrollmentId } },
     });
@@ -134,14 +145,17 @@ export class CourseProgressService {
 
   async getAnalytics(): Promise<AnalyticsResponseDto> {
     const totalProgress = await this.progressRepo.count();
-    const completed = await this.progressRepo.count({ where: { status: ProgressStatus.COMPLETED } });
-
+    const completed = await this.progressRepo.count({
+      where: { status: ProgressStatus.COMPLETED },
+    });
 
     return {
       totalProgress,
       completed,
       overallCompletionRate:
-        totalProgress > 0 ? (completed / totalProgress) * PERCENTAGE_MULTIPLIER : 0,
+        totalProgress > 0
+          ? (completed / totalProgress) * PERCENTAGE_MULTIPLIER
+          : 0,
     };
   }
 }

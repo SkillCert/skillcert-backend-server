@@ -9,15 +9,13 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Lesson } from '../entities/lesson.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { LessonResponseDto } from './dto/lesson-response.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { LessonsService } from './lessons.service';
-
 
 @Controller('lessons')
 @ApiTags('lessons')
@@ -43,7 +41,9 @@ export class LessonsController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createLessonDto: CreateLessonDto): Promise<{ message: string; data: LessonResponseDto }> {
+  async create(
+    @Body() createLessonDto: CreateLessonDto,
+  ): Promise<{ message: string; data: LessonResponseDto }> {
     const lesson = await this.lessonsService.create(createLessonDto);
     return { message: 'Lesson created successfully', data: lesson };
   }
@@ -55,7 +55,9 @@ export class LessonsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<{ message: string; data: LessonResponseDto }> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<{ message: string; data: LessonResponseDto }> {
     const lesson = await this.lessonsService.findOne(id);
     return { message: 'Lesson fetched successfully', data: lesson };
   }

@@ -1,12 +1,12 @@
+import { Type } from 'class-transformer';
 import {
-  IsNotEmpty,
-  IsUUID,
   IsArray,
-  ValidateNested,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
+  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class QuestionResponseDto {
   @IsNotEmpty()

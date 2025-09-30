@@ -1,13 +1,16 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import { NETWORK, DATABASE_PORT_RADIX } from '../common/constants';
+import { DATABASE_PORT_RADIX, NETWORK } from '../common/constants';
 
 dotenv.config();
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mariadb',
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || NETWORK.DEFAULT_DB_PORT.toString(), DATABASE_PORT_RADIX),
+  port: parseInt(
+    process.env.DB_PORT || NETWORK.DEFAULT_DB_PORT.toString(),
+    DATABASE_PORT_RADIX,
+  ),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,

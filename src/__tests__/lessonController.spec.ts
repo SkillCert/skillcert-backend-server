@@ -1,7 +1,7 @@
-import { LessonsController } from "../lessons/lessons.controller";
-import { LessonsService } from "../lessons/lessons.service";
+import { LessonsController } from '../lessons/lessons.controller';
+import { LessonsService } from '../lessons/lessons.service';
 
-describe("LessonsController", () => {
+describe('LessonsController', () => {
   let lessonsController: LessonsController;
   let lessonsService: LessonsService;
 
@@ -18,9 +18,9 @@ describe("LessonsController", () => {
     lessonsController = new LessonsController(lessonsService);
   });
 
-  describe("findAll", () => {
-    it("should return an array of lessons", async () => {
-      const fakeLessons = [{ id: "1", title: "Lesson 1" }];
+  describe('findAll', () => {
+    it('should return an array of lessons', async () => {
+      const fakeLessons = [{ id: '1', title: 'Lesson 1' }];
       (lessonsService.findAll as jest.Mock).mockResolvedValue(fakeLessons);
 
       const result = await lessonsController.findAll(1, 10);
@@ -29,32 +29,34 @@ describe("LessonsController", () => {
     });
   });
 
-  describe("findOne", () => {
-    it("should return a lesson by ID", async () => {
-      const fakeLesson = { id: "1", title: "Lesson 1" };
+  describe('findOne', () => {
+    it('should return a lesson by ID', async () => {
+      const fakeLesson = { id: '1', title: 'Lesson 1' };
       (lessonsService.findOne as jest.Mock).mockResolvedValue(fakeLesson);
 
-      const result = await lessonsController.findOne("1");
+      const result = await lessonsController.findOne('1');
       expect(result).toEqual(fakeLesson);
-      expect(lessonsService.findOne).toHaveBeenCalledWith("1");
+      expect(lessonsService.findOne).toHaveBeenCalledWith('1');
     });
   });
 
-  describe("findByModuleId", () => {
-    it("should return lessons by moduleId", async () => {
-      const fakeLessons = [{ id: "1", title: "Lesson A", module_id: "10" }];
-      (lessonsService.findByModuleId as jest.Mock).mockResolvedValue(fakeLessons);
+  describe('findByModuleId', () => {
+    it('should return lessons by moduleId', async () => {
+      const fakeLessons = [{ id: '1', title: 'Lesson A', module_id: '10' }];
+      (lessonsService.findByModuleId as jest.Mock).mockResolvedValue(
+        fakeLessons,
+      );
 
-      const result = await lessonsController.findByModuleId("10", 1, 10);
+      const result = await lessonsController.findByModuleId('10', 1, 10);
       expect(result).toEqual(fakeLessons);
-      expect(lessonsService.findByModuleId).toHaveBeenCalledWith("10", 1, 10);
+      expect(lessonsService.findByModuleId).toHaveBeenCalledWith('10', 1, 10);
     });
   });
 
-  describe("create", () => {
-    it("should create a new lesson", async () => {
-      const dto = { title: "New Lesson" };
-      const newLesson = { id: "1", ...dto };
+  describe('create', () => {
+    it('should create a new lesson', async () => {
+      const dto = { title: 'New Lesson' };
+      const newLesson = { id: '1', ...dto };
       (lessonsService.create as jest.Mock).mockResolvedValue(newLesson);
 
       const result = await lessonsController.create(dto as any);
@@ -63,25 +65,25 @@ describe("LessonsController", () => {
     });
   });
 
-  describe("update", () => {
-    it("should update a lesson", async () => {
-      const dto = { title: "Updated Lesson" };
-      const updatedLesson = { id: "1", ...dto };
+  describe('update', () => {
+    it('should update a lesson', async () => {
+      const dto = { title: 'Updated Lesson' };
+      const updatedLesson = { id: '1', ...dto };
       (lessonsService.update as jest.Mock).mockResolvedValue(updatedLesson);
 
-      const result = await lessonsController.update("1", dto as any);
+      const result = await lessonsController.update('1', dto as any);
       expect(result).toEqual(updatedLesson);
-      expect(lessonsService.update).toHaveBeenCalledWith("1", dto);
+      expect(lessonsService.update).toHaveBeenCalledWith('1', dto);
     });
   });
 
-  describe("remove", () => {
-    it("should delete a lesson", async () => {
+  describe('remove', () => {
+    it('should delete a lesson', async () => {
       (lessonsService.remove as jest.Mock).mockResolvedValue(undefined);
 
-      const result = await lessonsController.remove("1");
+      const result = await lessonsController.remove('1');
       expect(result).toBeUndefined();
-      expect(lessonsService.remove).toHaveBeenCalledWith("1");
+      expect(lessonsService.remove).toHaveBeenCalledWith('1');
     });
   });
 });
