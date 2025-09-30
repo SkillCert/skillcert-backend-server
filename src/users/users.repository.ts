@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { Repository } from 'typeorm';
+import type { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import type { CreateUserDto } from './dto/create-user.dto';
 import type { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -12,6 +13,25 @@ export class UsersRepository {
     private userRepository: Repository<User>,
   ) {}
 
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<User>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<User> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('user.createdAt >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('user.createdAt <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
     return await this.userRepository.save(user);
@@ -20,16 +40,30 @@ export class UsersRepository {
   async findAll(
     page?: number,
     limit?: number,
+    filters?: DateRangeFilterDto,
   ): Promise<{ users: User[]; total: number }> {
-    const skip = page && limit ? (page - 1) * limit : undefined;
-    const take = limit;
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.role',
+        'user.createdAt',
+        'user.updatedAt',
+      ])
+      .orderBy('user.createdAt', 'DESC');
 
-    const [users, total] = await this.userRepository.findAndCount({
-      select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
-      skip,
-      take,
-    });
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
 
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+    }
+
+    const [users, total] = await queryBuilder.getManyAndCount();
     return { users, total };
   }
 

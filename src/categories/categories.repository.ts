@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import { Category } from '../entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -12,16 +13,51 @@ export class CategoriesRepository {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<Category>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<Category> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('category.created_at >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('category.created_at <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
+  }
+
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const category = this.categoryRepository.create(createCategoryDto);
     return await this.categoryRepository.save(category);
   }
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoryRepository.find({
-      where: { isActive: true },
-      order: { name: 'ASC' },
-    });
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ categories: Category[]; total: number }> {
+    const queryBuilder = this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.isActive = :isActive', { isActive: true })
+      .orderBy('category.name', 'ASC');
+
+    if (filters) {
+      this.applyDateFilters(queryBuilder, filters);
+    }
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+    }
+
+    const [categories, total] = await queryBuilder.getManyAndCount();
+    return { categories, total };
   }
 
   async findById(id: string): Promise<Category | null> {

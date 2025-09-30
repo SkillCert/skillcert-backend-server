@@ -11,8 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FilteredPaginationQueryDto } from '../common';
 import { Roles } from '../common/decorators/roles.decorator';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
@@ -61,10 +61,24 @@ export class ModulesController {
     description: 'Number of items per page. Defaults to 20, max 100.',
     example: 10,
   })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-12-31T23:59:59.999Z',
+  })
   async findAll(
-    @Query() pagination: PaginationQueryDto,
+    @Query() query: FilteredPaginationQueryDto,
   ): Promise<PaginatedModuleResponseDto> {
-    return await this.modulesService.findAll(pagination);
+    return await this.modulesService.findAll(query);
   }
 
   @Get(':id')
@@ -99,11 +113,25 @@ export class ModulesController {
     description: 'Number of items per page. Defaults to 20, max 100.',
     example: 10,
   })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-12-31T23:59:59.999Z',
+  })
   async findByCourseId(
     @Param('courseId', ParseUUIDPipe) courseId: string,
-    @Query() pagination: PaginationQueryDto,
+    @Query() query: FilteredPaginationQueryDto,
   ): Promise<PaginatedModuleResponseDto> {
-    return this.modulesService.findByCourseId(courseId, pagination);
+    return this.modulesService.findByCourseId(courseId, query);
   }
 
   @Patch(':id')

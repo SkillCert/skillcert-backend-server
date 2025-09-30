@@ -8,8 +8,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewResponseDto } from './dto/review-response.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -72,9 +74,26 @@ export class ReviewsController {
       },
     },
   })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-12-31T23:59:59.999Z',
+  })
   @HttpCode(HttpStatus.OK)
-  findAll(@Param('courseId') courseId: string): Promise<ReviewResponseDto[]> {
-    return this.reviewsService.findCourseReviews(courseId);
+  findAll(
+    @Param('courseId') courseId: string,
+    @Query() filters: DateRangeFilterDto,
+  ): Promise<ReviewResponseDto[]> {
+    return this.reviewsService.findCourseReviews(courseId, filters);
   }
 
   @Get('/me')

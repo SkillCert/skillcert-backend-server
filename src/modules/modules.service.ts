@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DateRangeFilterDto, FilteredPaginationQueryDto } from '../common';
 import { LessonResponseDto } from '../lessons/dto/lesson-response.dto';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { ModuleResponseDto } from './dto/module-response.dto';
@@ -16,6 +16,25 @@ export class ModulesService {
     @InjectRepository(Module)
     private moduleRepository: Repository<Module>,
   ) {}
+
+  private applyDateFilters(
+    queryBuilder: SelectQueryBuilder<Module>,
+    filters: DateRangeFilterDto,
+  ): SelectQueryBuilder<Module> {
+    if (filters.startDate) {
+      queryBuilder.andWhere('module.created_at >= :startDate', {
+        startDate: new Date(filters.startDate),
+      });
+    }
+
+    if (filters.endDate) {
+      queryBuilder.andWhere('module.created_at <= :endDate', {
+        endDate: new Date(filters.endDate),
+      });
+    }
+
+    return queryBuilder;
+  }
 
   private toResponseDto(module: ModuleEntity): ModuleResponseDto {
     return {
@@ -47,17 +66,24 @@ export class ModulesService {
   }
 
   async findAll(
-    pagination: PaginationQueryDto,
+    pagination: FilteredPaginationQueryDto,
   ): Promise<PaginatedModuleResponseDto> {
-    const { page = 1, limit = 20 } = pagination;
+    const { page = 1, limit = 20, startDate, endDate } = pagination;
     const skip = (page - 1) * limit;
 
-    const [modules, total] = await this.moduleRepository.findAndCount({
-      relations: ['course', 'lessons'],
-      skip,
-      take: limit,
-      order: { created_at: 'DESC' },
-    });
+    const queryBuilder = this.moduleRepository
+      .createQueryBuilder('module')
+      .leftJoinAndSelect('module.course', 'course')
+      .leftJoinAndSelect('module.lessons', 'lessons')
+      .orderBy('module.created_at', 'DESC')
+      .skip(skip)
+      .take(limit);
+
+    if (startDate || endDate) {
+      this.applyDateFilters(queryBuilder, { startDate, endDate });
+    }
+
+    const [modules, total] = await queryBuilder.getManyAndCount();
 
     const items = modules.map(this.toResponseDto);
     return {
@@ -85,18 +111,24 @@ export class ModulesService {
 
   async findByCourseId(
     courseId: string,
-    pagination: PaginationQueryDto,
+    pagination: FilteredPaginationQueryDto,
   ): Promise<PaginatedModuleResponseDto> {
-    const { page = 1, limit = 20 } = pagination;
+    const { page = 1, limit = 20, startDate, endDate } = pagination;
     const skip = (page - 1) * limit;
 
-    const [modules, total] = await this.moduleRepository.findAndCount({
-      where: { course_id: courseId },
-      relations: ['lessons'],
-      order: { created_at: 'ASC' },
-      skip,
-      take: limit,
-    });
+    const queryBuilder = this.moduleRepository
+      .createQueryBuilder('module')
+      .leftJoinAndSelect('module.lessons', 'lessons')
+      .where('module.course_id = :courseId', { courseId })
+      .orderBy('module.created_at', 'ASC')
+      .skip(skip)
+      .take(limit);
+
+    if (startDate || endDate) {
+      this.applyDateFilters(queryBuilder, { startDate, endDate });
+    }
+
+    const [modules, total] = await queryBuilder.getManyAndCount();
 
     const items = modules.map(this.toResponseDto);
     return {

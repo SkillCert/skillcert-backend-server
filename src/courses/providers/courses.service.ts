@@ -6,9 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CategoriesService } from '../../categories/categories.service';
+import { DateRangeFilterDto } from '../../common/dto/date-range-filter.dto';
 import { UserRole } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/providers/users.service';
 import { CoursesRepository } from '../courses.repository';
+import { CourseResponseDto } from '../dto/course-response.dto';
 import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import type { Course } from '../entities/course.entity';
@@ -37,7 +39,7 @@ export class CoursesService {
 
     // Validate category if provided
     if (createCourseDto.categoryId) {
-      await this.categoriesService.findById(createCourseDto.categoryId);
+      await this.categoriesService.findCategoryById(createCourseDto.categoryId);
     }
 
     // Check if course title already exists
@@ -51,8 +53,53 @@ export class CoursesService {
     return await this.coursesRepository.create(createCourseDto);
   }
 
-  async findAll(): Promise<Course[]> {
-    return await this.coursesRepository.findAll();
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: DateRangeFilterDto,
+  ): Promise<{ courses: CourseResponseDto[]; total: number }> {
+    const { courses, total } = await this.coursesRepository.findAll(
+      page,
+      limit,
+      filters,
+    );
+
+    return {
+      courses: courses.map((course) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        professor: {
+          id: course.professor.id,
+          name: course.professor.name,
+          email: course.professor.email,
+          role: course.professor.role,
+          createdAt: course.professor.createdAt,
+          updatedAt: course.professor.updatedAt,
+        },
+        modules: course.modules?.map((module) => ({
+          id: module.id,
+          title: module.title,
+          createdAt: module.created_at,
+          updatedAt: module.updated_at,
+        })),
+        category: course.category
+          ? {
+              id: course.category.id,
+              name: course.category.name,
+              description: course.category.description,
+              color: course.category.color,
+              isActive: course.category.isActive,
+              createdAt: course.category.created_at,
+              updatedAt: course.category.updated_at,
+            }
+          : undefined,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        averageRating: course.acquireReviewAverageRating(),
+      })),
+      total,
+    };
   }
 
   async findByProfessorId(professorId: string): Promise<Course[]> {
@@ -122,7 +169,7 @@ export class CoursesService {
 
     // If category is being updated, validate the new category
     if (updateCourseDto.categoryId) {
-      await this.categoriesService.findById(updateCourseDto.categoryId);
+      await this.categoriesService.findCategoryById(updateCourseDto.categoryId);
     }
 
     // Check if title is being updated and if it already exists
@@ -192,14 +239,17 @@ export class CoursesService {
     return course;
   }
 
-  async findByCategoryId(categoryId: string): Promise<Course[]> {
+  async findByCategoryId(
+    categoryId: string,
+    filters?: DateRangeFilterDto,
+  ): Promise<Course[]> {
     if (!categoryId) {
       throw new BadRequestException('Category ID is required');
     }
 
     // Validate that the category exists
-    await this.categoriesService.findById(categoryId);
+    await this.categoriesService.findCategoryById(categoryId);
 
-    return await this.coursesRepository.findByCategoryId(categoryId);
+    return await this.coursesRepository.findByCategoryId(categoryId, filters);
   }
 }

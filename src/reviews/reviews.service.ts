@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CoursesRepository } from 'src/courses/courses.repository';
 import { UsersRepository } from 'src/users/users.repository';
+import { DateRangeFilterDto } from '../common/dto/date-range-filter.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewResponseDto } from './dto/review-response.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -52,8 +53,14 @@ export class ReviewsService {
     return this.toResponseDto(saved);
   }
 
-  async findCourseReviews(courseId: string): Promise<ReviewResponseDto[]> {
-    const reviews = await this.reviewsRepository.findByCourseId(courseId);
+  async findCourseReviews(
+    courseId: string,
+    filters?: DateRangeFilterDto,
+  ): Promise<ReviewResponseDto[]> {
+    const reviews = await this.reviewsRepository.findByCourseId(
+      courseId,
+      filters,
+    );
     return reviews.map((r) => this.toResponseDto(r));
   }
 
