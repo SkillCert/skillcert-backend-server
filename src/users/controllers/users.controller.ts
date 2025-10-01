@@ -23,6 +23,12 @@ import { UsersService } from '../providers/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /*
+   * Brief description: Creates a new user in the system with the provided user data.
+   * @param {CreateUserDto} createUserDto - Data transfer object containing user information to create a new user.
+   * @returns {Promise<{message: string, data: UserResponseDto}>} A promise that resolves to an object with success message and the created user data.
+   * @throws {Error} Validation error if the input data is invalid or if user creation fails.
+   */
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
@@ -56,6 +62,11 @@ export class UsersController {
     };
   }
 
+  /*
+   * Brief description: Retrieves all users from the system with pagination support.
+   * @returns {Promise<{message: string, data: UserResponseDto[], count: number}>} A promise that resolves to an object containing success message, array of users, and total count.
+   * @throws {Error} Database error if the retrieval operation fails.
+   */
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
@@ -104,6 +115,12 @@ export class UsersController {
     };
   }
 
+  /*
+   * Brief description: Retrieves a specific user by their unique identifier.
+   * @param {string} id - The unique identifier of the user to retrieve.
+   * @returns {Promise<{message: string, data: UserResponseDto}>} A promise that resolves to an object with success message and the user data.
+   * @throws {Error} User not found error if the user with the specified ID does not exist.
+   */
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({
@@ -137,6 +154,13 @@ export class UsersController {
     };
   }
 
+  /*
+   * Brief description: Updates an existing user with the provided data.
+   * @param {string} id - The unique identifier of the user to update.
+   * @param {UpdateUserDto} updateUserDto - Data transfer object containing the updated user information.
+   * @returns {Promise<{message: string, data: UserResponseDto}>} A promise that resolves to an object with success message and the updated user data.
+   * @throws {Error} User not found error if the user with the specified ID does not exist, or validation error if the update data is invalid.
+   */
   @Put(':id')
   @ApiOperation({ summary: 'Update user by ID' })
   @ApiResponse({
@@ -176,6 +200,12 @@ export class UsersController {
     };
   }
 
+  /*
+   * Brief description: Deletes a user from the system by their unique identifier.
+   * @param {string} id - The unique identifier of the user to delete.
+   * @returns {Promise<{message: string}>} A promise that resolves to an object with a success message confirming deletion.
+   * @throws {Error} User not found error if the user with the specified ID does not exist.
+   */
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by ID' })
   @ApiResponse({
