@@ -26,6 +26,12 @@ const SAMPLE_USER_ID: string = 'DJKF392GKK';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  /**
+   * Brief description: Creates a new review for a specific course.
+   * @param {string} courseId - The ID of the course to create the review for.
+   * @param {CreateReviewDto} createReviewDto - The data transfer object containing review details.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the created review response.
+   */
   @Post()
   @ApiOperation({ summary: 'Create a review for a course' })
   @ApiResponse({
@@ -56,6 +62,12 @@ export class ReviewsController {
     );
   }
 
+  /**
+   * Brief description: Retrieves all reviews for a specific course, optionally filtered by date range.
+   * @param {string} courseId - The ID of the course to retrieve reviews for.
+   * @param {DateRangeFilterDto} filters - The date range filters for the reviews.
+   * @returns {Promise<ReviewResponseDto[]>} A promise that resolves to an array of review responses.
+   */
   @Get()
   @ApiOperation({ summary: 'Get all reviews for a course' })
   @ApiResponse({
@@ -96,12 +108,23 @@ export class ReviewsController {
     return this.reviewsService.findCourseReviews(courseId, filters);
   }
 
+  /**
+   * Brief description: Retrieves the current user's review for a specific course.
+   * @param {string} courseId - The ID of the course to retrieve the review for.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the user's review response.
+   */
   @Get('/me')
   @HttpCode(HttpStatus.OK)
   findOne(@Param('courseId') courseId: string): Promise<ReviewResponseDto> {
     return this.reviewsService.findCourseMyReview(SAMPLE_USER_ID, courseId);
   }
 
+  /**
+   * Brief description: Updates an existing review for a specific course.
+   * @param {string} courseId - The ID of the course the review belongs to.
+   * @param {UpdateReviewDto} updateDto - The data transfer object containing updated review details.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the updated review response.
+   */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   update(
@@ -115,6 +138,11 @@ export class ReviewsController {
     );
   }
 
+  /**
+   * Brief description: Deletes the current user's review for a specific course.
+   * @param {string} courseId - The ID of the course to delete the review from.
+   * @returns {Promise<void>} A promise that resolves when the review is deleted.
+   */
   @Delete()
   @ApiOperation({ summary: 'Delete user review for a course' })
   @ApiResponse({ status: 200, description: 'Review deleted successfully' })
