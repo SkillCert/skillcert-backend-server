@@ -16,6 +16,11 @@ export class ReviewsService {
     private readonly userRepository: UsersRepository,
   ) {}
 
+  /*
+   * Brief description: Transforms a Review entity into a ReviewResponseDto.
+   * @param {Review} review - The review entity to transform.
+   * @returns {ReviewResponseDto} The review response DTO containing review data.
+   */
   private toResponseDto(review: Review): ReviewResponseDto {
     return {
       userId: review.userId,
@@ -28,6 +33,14 @@ export class ReviewsService {
     };
   }
 
+  /*
+   * Brief description: Creates a new review for a course by a user.
+   * @param {string} userId - The ID of the user creating the review.
+   * @param {string} courseId - The ID of the course being reviewed.
+   * @param {CreateReviewDto} createDto - The data transfer object containing review details.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the created review data.
+   * @throws {BadRequestException} If a review already exists for this user and course.
+   */
   async createReview(
     userId: string,
     courseId: string,
@@ -53,6 +66,12 @@ export class ReviewsService {
     return this.toResponseDto(saved);
   }
 
+  /*
+   * Brief description: Retrieves all reviews for a specific course with optional date range filtering.
+   * @param {string} courseId - The ID of the course to find reviews for.
+   * @param {DateRangeFilterDto} filters - Optional date range filters to apply to the search.
+   * @returns {Promise<ReviewResponseDto[]>} A promise that resolves to an array of review response DTOs.
+   */
   async findCourseReviews(
     courseId: string,
     filters?: DateRangeFilterDto,
@@ -64,6 +83,13 @@ export class ReviewsService {
     return reviews.map((r) => this.toResponseDto(r));
   }
 
+  /*
+   * Brief description: Retrieves a specific user's review for a course.
+   * @param {string} userId - The ID of the user who wrote the review.
+   * @param {string} courseId - The ID of the course being reviewed.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the user's review data.
+   * @throws {Error} If the review is not found.
+   */
   async findCourseMyReview(
     userId: string,
     courseId: string,
@@ -75,6 +101,14 @@ export class ReviewsService {
     return this.toResponseDto(review);
   }
 
+  /*
+   * Brief description: Updates an existing review for a course.
+   * @param {string} userId - The ID of the user who owns the review.
+   * @param {string} courseId - The ID of the course being reviewed.
+   * @param {UpdateReviewDto} updateReviewDto - The data transfer object containing updated review details.
+   * @returns {Promise<ReviewResponseDto>} A promise that resolves to the updated review data.
+   * @throws {Error} If the review is not found.
+   */
   async updateReview(
     userId: string,
     courseId: string,
@@ -95,6 +129,12 @@ export class ReviewsService {
     return this.toResponseDto(review);
   }
 
+  /*
+   * Brief description: Deletes a user's review for a specific course.
+   * @param {string} userId - The ID of the user who owns the review.
+   * @param {string} courseId - The ID of the course being reviewed.
+   * @returns {Promise<void>} A promise that resolves when the review is successfully deleted.
+   */
   async deleteReview(userId: string, courseId: string): Promise<void> {
     await this.reviewsRepository.delete(courseId, userId);
   }
