@@ -35,7 +35,12 @@ export class CourseProgressService {
     @InjectRepository(QuizAttempt)
     private quizAttemptRepo: Repository<QuizAttempt>,
   ) { }
-  
+
+  /**
+   * Converts a CourseProgress entity to a CourseProgressResponseDto.
+   * @param {CourseProgress} progress - The CourseProgress entity to convert.
+   * @returns {CourseProgressResponseDto} The resulting DTO object.
+   */
   private responseToDto(progress: CourseProgress): CourseProgressResponseDto {
     return {
       enrollmentId: progress.enrollment.id,
@@ -45,6 +50,14 @@ export class CourseProgressService {
     };
   }
 
+  /**
+   * Creates or updates the progress status for a lesson within an enrollment.
+   * It verifies quiz requirements before marking a lesson as 'completed'.
+   * @param {UpdateProgressDto} dto - DTO containing enrollmentId, lessonId, and new status.
+   * @returns {Promise<CourseProgressResponseDto>} A promise that resolves to the DTO of the updated/created progress record.
+   * @throws {NotFoundException} If the specified enrollment or lesson does not exist.
+   * @throws {BadRequestException} If trying to complete a lesson without passing its required quizzes.
+   */
   async updateProgress(
     dto: UpdateProgressDto,
   ): Promise<CourseProgressResponseDto> {
@@ -84,6 +97,14 @@ export class CourseProgressService {
     const saved = await this.progressRepo.save(progress);
     return this.responseToDto(saved);
   }
+
+  /**
+   * A private helper to verify that a user has passed all quizzes for a specific lesson.
+   * @param {string} userId - The ID of the user whose quiz attempts are being checked.
+   * @param {string} lessonId - The ID of the lesson to check for quiz requirements.
+   * @returns {Promise<void>} A promise that resolves if all quiz requirements are met.
+   * @throws {BadRequestException} If any quiz associated with the lesson has not been passed by the user.
+   */
   private async checkQuizRequirements(userId: string, lessonId: string): Promise<void> {
     const quizzes = await this.quizRepo.find({
       where: { lesson_id: lessonId },
@@ -108,6 +129,11 @@ export class CourseProgressService {
     }
   }
 
+  /**
+   * Retrieves all progress records for a given course enrollment.
+   * @param {string} enrollmentId - The ID of the enrollment to retrieve progress for.
+   * @returns {Promise<CourseProgressResponseDto[]>} A promise that resolves to an array of DTOs representing the lesson progress for the enrollment.
+   */
   async getCourseProgress(enrollmentId: string):Promise<CourseProgressResponseDto[]> {
     const progress = await this.progressRepo.find({
       where: { enrollment: { id: enrollmentId } },
@@ -116,6 +142,11 @@ export class CourseProgressService {
     return progress.map(this.responseToDto);
   }
 
+  /**
+   * Calculates the completion rate for a specific course enrollment.
+   * @param {string} enrollmentId - The ID of the enrollment for which to calculate the completion rate.
+   * @returns {Promise<CompletionRateResponseDto>} A promise that resolves to an object with the total, completed, and completion rate percentage.
+   */
   async getCompletionRate(
     enrollmentId: string,
   ): Promise<CompletionRateResponseDto> {
@@ -133,7 +164,7 @@ export class CourseProgressService {
         status: ProgressStatus.COMPLETED,
       },
     });
-
+    
 
     return {
       enrollmentId,
@@ -143,6 +174,10 @@ export class CourseProgressService {
     };
   }
 
+  /**
+   * Provides overall analytics for course progress across all enrollments and users.
+   * @returns {Promise<AnalyticsResponseDto>} A promise that resolves to an object containing total progress records, completed records, and the overall completion rate.
+   */
   async getAnalytics(): Promise<AnalyticsResponseDto> {
     const totalProgress = await this.progressRepo.count();
     const completed = await this.progressRepo.count({
