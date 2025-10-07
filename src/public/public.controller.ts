@@ -38,6 +38,12 @@ export class PublicController {
     },
   })
   @HttpCode(HttpStatus.OK)
+  /*
+   *  Retrieves public information about the application including app name, version, and available features.
+   * @returns {Promise<Object>} Returns an object containing a success message and application data
+   *                           including appName, version, description, and list of features.
+   * @throws {UnauthorizedException} If the user is not authenticated or lacks admin role.
+   */
   getPublicInfo() {
     return {
       message: 'This is public information - no authentication required',
@@ -58,6 +64,12 @@ export class PublicController {
 
   @Get('courses')
   @HttpCode(HttpStatus.OK)
+  /*
+   *  Retrieves a list of publicly available courses from the platform.
+   * @returns {Promise<Object>} Returns an object containing a success message and an array of courses,
+   *                           each with id, title, description, category, and publication status.
+   * @throws {UnauthorizedException} If the user is not authenticated or lacks admin role.
+   */
   getPublicCourses() {
     return {
       message: 'Public course catalog - no authentication required',
@@ -84,6 +96,12 @@ export class PublicController {
 
   @Get('categories')
   @HttpCode(HttpStatus.OK)
+  /*
+   *  Retrieves a list of all available course categories with their styling information.
+   * @returns {Promise<Object>} Returns an object containing a success message and an array of categories,
+   *                           each with id, name, and associated color code.
+   * @throws {UnauthorizedException} If the user is not authenticated or lacks admin role.
+   */
   getPublicCategories() {
     return {
       message: 'Public course categories - no authentication required',
