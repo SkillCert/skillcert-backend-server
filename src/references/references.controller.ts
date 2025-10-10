@@ -48,6 +48,12 @@ export class ReferencesController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
+  /*
+   * Description: Creates a new reference in the system.
+   * @param {CreateReferenceDto} createReferenceDto - The data transfer object containing reference creation details.
+   * @returns {Promise<ReferenceResponseDto>} A promise that resolves to the created reference response data.
+   * @throws {Error} Throws validation error if the provided data is invalid.
+   */
   create(
     @Body() createReferenceDto: CreateReferenceDto,
   ): Promise<ReferenceResponseDto> {
@@ -55,11 +61,21 @@ export class ReferencesController {
   }
 
   @Get()
+  /*
+   * Description: Retrieves all references from the system.
+   * @returns {Promise<ReferenceResponseDto[]>} A promise that resolves to an array of all reference response data.
+   */
   findAll(): Promise<ReferenceResponseDto[]> {
     return this.referencesService.findAll();
   }
 
   @Get(':id')
+  /*
+   * Description: Retrieves a specific reference by its unique identifier.
+   * @param {string} id - The UUID of the reference to retrieve.
+   * @returns {Promise<ReferenceResponseDto>} A promise that resolves to the reference response data.
+   * @throws {Error} Throws error if the reference with the specified ID is not found.
+   */
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ReferenceResponseDto> {
@@ -84,6 +100,12 @@ export class ReferencesController {
       },
     },
   })
+  /*
+   * Description: Retrieves all references associated with a specific module.
+   * @param {string} moduleId - The UUID of the module to get references for.
+   * @returns {Promise<ReferenceResponseDto[]>} A promise that resolves to an array of reference response data for the specified module.
+   * @throws {Error} Throws error if the module with the specified ID is not found.
+   */
   findByModule(
     @Param('moduleId', ParseUUIDPipe) moduleId: string,
   ): Promise<ReferenceResponseDto[]> {
@@ -108,6 +130,12 @@ export class ReferencesController {
       },
     },
   })
+  /*
+   * Description: Retrieves all references associated with a specific lesson.
+   * @param {string} lessonId - The UUID of the lesson to get references for.
+   * @returns {Promise<ReferenceResponseDto[]>} A promise that resolves to an array of reference response data for the specified lesson.
+   * @throws {Error} Throws error if the lesson with the specified ID is not found.
+   */
   findByLesson(
     @Param('lessonId', ParseUUIDPipe) lessonId: string,
   ): Promise<ReferenceResponseDto[]> {
@@ -135,6 +163,13 @@ export class ReferencesController {
       },
     },
   })
+  /*
+   * Description: Updates an existing reference with new data.
+   * @param {string} id - The UUID of the reference to update.
+   * @param {UpdateReferenceDto} updateReferenceDto - The data transfer object containing updated reference details.
+   * @returns {Promise<ReferenceResponseDto>} A promise that resolves to the updated reference response data.
+   * @throws {Error} Throws error if the reference is not found or validation fails.
+   */
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateReferenceDto: UpdateReferenceDto,
@@ -157,6 +192,12 @@ export class ReferencesController {
     },
   })
   @HttpCode(HttpStatus.NO_CONTENT)
+  /*
+   * Description: Deletes a reference from the system by its unique identifier.
+   * @param {string} id - The UUID of the reference to delete.
+   * @returns {Promise<void>} A promise that resolves when the reference is successfully deleted.
+   * @throws {Error} Throws error if the reference with the specified ID is not found.
+   */
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.referencesService.remove(id);
   }
