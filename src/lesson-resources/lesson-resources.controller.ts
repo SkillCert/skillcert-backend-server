@@ -115,15 +115,19 @@ export class LessonResourcesController {
 
     if (type) {
       resources = await this.lessonResourcesService.findByResourceType(type);
+      return {
+        message: 'Lesson resources retrieved successfully',
+        data: resources,
+        count: resources.length,
+      };
     } else {
-      resources = await this.lessonResourcesService.findAll();
+      const result = await this.lessonResourcesService.findAll();
+      return {
+        message: 'Lesson resources retrieved successfully',
+        data: result.resources,
+        count: result.total,
+      };
     }
-
-    return {
-      message: 'Lesson resources retrieved successfully',
-      data: resources,
-      count: resources.length,
-    };
   }
 
   @Get('lesson/:lessonId')

@@ -97,4 +97,15 @@ export class CategoriesRepository {
     const count = await this.categoryRepository.count({ where: { id } });
     return count > 0;
   }
+
+  async exists(id: string): Promise<boolean> {
+    return this.existsById(id);
+  }
+
+  async findActiveCategories(): Promise<Category[]> {
+    return await this.categoryRepository.find({
+      where: { isActive: true },
+      order: { name: 'ASC' },
+    });
+  }
 }

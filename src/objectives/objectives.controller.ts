@@ -55,7 +55,7 @@ export class ObjectivesController {
   })
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createObjectiveDto: CreateObjectiveDto) {
-    const objective = await this.objectivesService.create(createObjectiveDto);
+    const objective = await this.objectivesService.createObjetive(createObjectiveDto);
     return {
       success: true,
       message: 'Objective created successfully',
@@ -89,7 +89,7 @@ export class ObjectivesController {
     },
   })
   async findAll() {
-    const objectives = await this.objectivesService.findAll();
+    const objectives = await this.objectivesService.findAllObjectives();
     return {
       success: true,
       message: 'Objectives retrieved successfully',
@@ -157,7 +157,7 @@ export class ObjectivesController {
     },
   })
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const objective = await this.objectivesService.findOne(id);
+    const objective = await this.objectivesService.findOneObjective(id);
     return {
       success: true,
       message: 'Objective retrieved successfully',
@@ -197,7 +197,7 @@ export class ObjectivesController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateObjectiveDto: UpdateObjectiveDto,
   ) {
-    const objective = await this.objectivesService.update(
+    const objective = await this.objectivesService.updateObjective(
       id,
       updateObjectiveDto,
     );

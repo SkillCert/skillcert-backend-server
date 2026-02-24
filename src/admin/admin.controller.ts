@@ -213,7 +213,8 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUserById(@Param('id') id: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deleteUserById(@Param('id') _id: string) {
     return;
   }
   @Get('analytics')

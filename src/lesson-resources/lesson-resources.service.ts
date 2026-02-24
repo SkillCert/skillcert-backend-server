@@ -298,7 +298,7 @@ export class LessonResourcesService {
     await this.lessonResourceRepository.increment({ id }, 'download_count', 1);
   }
 
-  private getResourceTypeFromMimetype(mimetype: string): ResourceType {
+  protected getResourceTypeFromMimetype(mimetype: string): ResourceType {
     if (mimetype.startsWith('image/')) return ResourceType.IMAGE;
     if (mimetype.startsWith('video/')) return ResourceType.VIDEO;
     if (mimetype.startsWith('audio/')) return ResourceType.AUDIO;

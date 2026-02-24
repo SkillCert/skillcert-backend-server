@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class QuestionResponseDto {
+export class UserAnswerDto {
   @IsNotEmpty()
   @IsUUID()
   question_id: string;
@@ -33,6 +33,6 @@ export class SubmitQuizDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => QuestionResponseDto)
-  responses: QuestionResponseDto[];
+  @Type(() => UserAnswerDto)
+  responses: UserAnswerDto[];
 }
