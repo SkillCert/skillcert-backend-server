@@ -19,6 +19,9 @@ import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
 
+const PERCENTAGE_MULTIPLIER = 100;
+const QUIZ_PASSING_THRESHOLD = 70;
+
 @Injectable()
 export class QuizService {
   constructor(
@@ -41,32 +44,32 @@ export class QuizService {
     this.logger.setContext(QuizService.name);
   }
 
-  private toResponseDto(quiz: Quiz): QuizResponseDto {
-    return {
-      id: quiz.id,
-      title: quiz.title,
-      description: quiz.description,
-      lesson_id: quiz.lesson_id,
-      questions:
-        quiz.questions?.map((q) => ({
-          id: q.id,
-          text: q.text,
-          type: q.type,
-          answers:
-            q.answers?.map((a) => ({
-              id: a.id,
-              text: a.text,
-              correct: a.correct,
-              created_at: a.created_at,
-              updated_at: a.updated_at,
-            })) || [],
-          created_at: q.created_at,
-          updated_at: q.updated_at,
-        })) || [],
-      created_at: quiz.created_at,
-      updated_at: quiz.updated_at,
-    };
-  }
+  // private _toResponseDto(quiz: Quiz): QuizResponseDto {
+  //   return {
+  //     id: quiz.id,
+  //     title: quiz.title,
+  //     description: quiz.description,
+  //     lesson_id: quiz.lesson_id,
+  //     questions:
+  //       quiz.questions?.map((q) => ({
+  //         id: q.id,
+  //         text: q.text,
+  //         type: q.type,
+  //         answers:
+  //           q.answers?.map((a) => ({
+  //             id: a.id,
+  //             text: a.text,
+  //             correct: a.correct,
+  //             created_at: a.created_at,
+  //             updated_at: a.updated_at,
+  //           })) || [],
+  //         created_at: q.created_at,
+  //         updated_at: q.updated_at,
+  //       })) || [],
+  //     created_at: quiz.created_at,
+  //     updated_at: quiz.updated_at,
+  //   };
+  // }
 
   async create(createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     // Validate the quiz structure
@@ -218,7 +221,7 @@ export class QuizService {
     for (const responseDto of submitQuizDto.responses) {
       const question = quiz.questions.find(
         (q) => q.id === responseDto.question_id,
-      );
+      ) as unknown as Question;
       if (!question) {
         throw new BadRequestException(
           `Question ${responseDto.question_id} not found in quiz`,

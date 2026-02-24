@@ -116,7 +116,8 @@ export class LessonResourcesController {
     if (type) {
       resources = await this.lessonResourcesService.findByResourceType(type);
     } else {
-      resources = await this.lessonResourcesService.findAll();
+      const result = await this.lessonResourcesService.findAll();
+      resources = result.resources;
     }
 
     return {

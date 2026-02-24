@@ -54,8 +54,6 @@ export class LessonsService {
     const lessons = await this.lessonRepository.find({
       where: { module_id: moduleId },
       order: { created_at: 'ASC' },
-      skip,
-      take: limit,
     });
     return lessons.map(this.toResponseDto);
   }
@@ -63,7 +61,7 @@ export class LessonsService {
     id: string,
     updateLessonDto: UpdateLessonDto,
   ): Promise<LessonResponseDto> {
-    const lesson = await this.findOne(id); // this already returns DTO
+    await this.findOne(id); // Verify it exists (throws if not found)
     const entity = await this.lessonRepository.findOne({ where: { id } });
 
     if (!entity) throw new NotFoundException(`Lesson with ID ${id} not found`);

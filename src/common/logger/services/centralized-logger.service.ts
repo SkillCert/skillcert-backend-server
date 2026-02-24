@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import {
   ILoggerService,
   LogContext,
@@ -11,8 +11,8 @@ export class CentralizedLoggerService implements ILoggerService {
   private logger: Logger;
   private context: string = 'Application';
 
-  constructor() {
-    this.context = 'Application';
+  constructor(@Optional() @Inject('LOGGER_CONTEXT') context?: string) {
+    this.context = context ?? 'Application';
     this.logger = new Logger(this.context);
   }
 

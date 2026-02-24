@@ -248,7 +248,7 @@ describe('LessonResourcesService', () => {
 
       const findOneSpy = jest
         .spyOn(service, 'findOne')
-        .mockResolvedValue(mockResource);
+        .mockResolvedValue(mockResource as any);
       mockRepository.delete.mockResolvedValue({ affected: 1 } as any);
 
       await service.permanentDelete('resource-uuid');

@@ -41,7 +41,7 @@ export class CourseProgressController {
     },
   })
   async getProgress(@Param('enrollmentId') enrollmentId: string) {
-    return this.progressService.getProgress(enrollmentId);
+    return this.progressService.getCourseProgress(enrollmentId);
   }
 
   @Get(':enrollmentId/completion-rate')

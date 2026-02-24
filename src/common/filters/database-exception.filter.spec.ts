@@ -31,7 +31,7 @@ describe('DatabaseExceptionFilter', () => {
       code: '23505',
       message: 'duplicate',
       stack: 'stack',
-    } as QueryFailedError;
+    } as unknown as QueryFailedError;
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -48,7 +48,7 @@ describe('DatabaseExceptionFilter', () => {
       code: '23503',
       message: 'fk error',
       stack: 'stack',
-    } as QueryFailedError;
+    } as unknown as QueryFailedError;
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -65,7 +65,7 @@ describe('DatabaseExceptionFilter', () => {
       code: '23502',
       message: 'not null',
       stack: 'stack',
-    } as QueryFailedError;
+    } as unknown as QueryFailedError;
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -82,7 +82,7 @@ describe('DatabaseExceptionFilter', () => {
       code: '22P02',
       message: 'invalid input',
       stack: 'stack',
-    } as QueryFailedError;
+    } as unknown as QueryFailedError;
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -99,7 +99,7 @@ describe('DatabaseExceptionFilter', () => {
       code: '99999',
       message: 'unknown',
       stack: 'stack',
-    } as QueryFailedError;
+    } as unknown as QueryFailedError;
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(
       HttpStatus.INTERNAL_SERVER_ERROR,

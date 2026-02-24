@@ -51,7 +51,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.usersRepository.findAll();
+    const { users } = await this.usersRepository.findAll();
     return users.map((u) => this.toResponseDto(u));
   }
 

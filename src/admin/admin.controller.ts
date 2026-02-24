@@ -213,7 +213,7 @@ export class AdminController {
   })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUserById(@Param('id') id: string) {
+  deleteUserById(@Param('id') _id: string) {
     return;
   }
   @Get('analytics')

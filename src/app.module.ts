@@ -6,6 +6,7 @@ import * as path from 'path';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoggerModule } from './common/logger/logger.module';
 
 function loadModules(): (new () => any)[] {
   const modulesDir = path.join(__dirname);
@@ -60,6 +61,7 @@ function loadModules(): (new () => any)[] {
       inject: [ConfigService],
     }),
     ...loadModules(),
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

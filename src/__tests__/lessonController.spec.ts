@@ -23,9 +23,9 @@ describe('LessonsController', () => {
       const fakeLessons = [{ id: '1', title: 'Lesson 1' }];
       (lessonsService.findAll as jest.Mock).mockResolvedValue(fakeLessons);
 
-      const result = await lessonsController.findAll(1, 10);
+      const result = await lessonsController.findAll();
       expect(result).toEqual(fakeLessons);
-      expect(lessonsService.findAll).toHaveBeenCalledWith(1, 10);
+      expect(lessonsService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -47,9 +47,9 @@ describe('LessonsController', () => {
         fakeLessons,
       );
 
-      const result = await lessonsController.findByModuleId('10', 1, 10);
+      const result = await lessonsController.findByModuleId('10');
       expect(result).toEqual(fakeLessons);
-      expect(lessonsService.findByModuleId).toHaveBeenCalledWith('10', 1, 10);
+      expect(lessonsService.findByModuleId).toHaveBeenCalledWith('10');
     });
   });
 

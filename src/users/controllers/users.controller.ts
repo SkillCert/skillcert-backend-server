@@ -98,20 +98,12 @@ export class UsersController {
     data: UserResponseDto[];
     count: number;
   }> {
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
-
-    const { users, total } = await this.usersService.findAll(
-      pageNumber,
-      limitNumber,
-    );
+    const users = await this.usersService.findAll();
 
     return {
       message: 'Users retrieved successfully',
       data: users,
-      total,
-      page: pageNumber,
-      limit: limitNumber,
+      count: users.length,
     };
   }
 
