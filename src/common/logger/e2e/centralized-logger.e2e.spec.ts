@@ -192,7 +192,7 @@ describe('CentralizedLoggerService E2E', () => {
       // Create another logger instance with different context
       const anotherLogger = new CentralizedLoggerService('AnotherService');
 
-      expect(loggerService.getContext()).toBe('Application');
+      expect(loggerService.getContext()).toBe('TestLoggerService');
       expect(anotherLogger.getContext()).toBe('AnotherService');
     });
 
@@ -202,14 +202,14 @@ describe('CentralizedLoggerService E2E', () => {
 
       expect(childLogger1.getContext()).toBe('Child1');
       expect(childLogger2.getContext()).toBe('Child2');
-      expect(loggerService.getContext()).toBe('Application');
+      expect(loggerService.getContext()).toBe('TestLoggerService');
 
       // Modify one child's context
       childLogger1.setContext('ModifiedChild1');
 
       expect(childLogger1.getContext()).toBe('ModifiedChild1');
       expect(childLogger2.getContext()).toBe('Child2');
-      expect(loggerService.getContext()).toBe('Application');
+      expect(loggerService.getContext()).toBe('TestLoggerService');
     });
   });
 

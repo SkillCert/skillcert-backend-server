@@ -102,7 +102,6 @@ export class CategoriesRepository {
   async exists(id: string): Promise<boolean> {
     return this.existsById(id);
   }
-
   async findActiveCategories(): Promise<Category[]> {
     return await this.categoryRepository.find({
       where: { isActive: true },

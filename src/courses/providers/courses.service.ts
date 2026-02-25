@@ -74,6 +74,8 @@ export class CoursesService {
           name: course.professor.name,
           email: course.professor.email,
           role: course.professor.role,
+          stellarPublicKey: course.professor.stellarPublicKey ?? null,
+          walletAddress: course.professor.walletAddress ?? null,
           createdAt: course.professor.createdAt,
           updatedAt: course.professor.updatedAt,
         },

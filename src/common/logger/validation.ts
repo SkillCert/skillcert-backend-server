@@ -2,7 +2,8 @@
 import { CentralizedLoggerService } from './services/centralized-logger.service';
 
 // Basic instantiation test
-const logger = new CentralizedLoggerService('TestValidation');
+const logger = new CentralizedLoggerService();
+logger.setContext('TestValidation');
 
 console.log('✅ CentralizedLoggerService instantiated successfully');
 console.log('✅ Context:', logger.getContext());

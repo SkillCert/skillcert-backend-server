@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthGuard } from './common/guards/auth.guard';
 import { LoggerModule } from './common/logger/logger.module';
 
 function loadModules(): (new () => any)[] {
@@ -41,6 +43,7 @@ function loadModules(): (new () => any)[] {
 
 @Module({
   imports: [
+    LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -64,6 +67,12 @@ function loadModules(): (new () => any)[] {
     LoggerModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

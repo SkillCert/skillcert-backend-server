@@ -7,6 +7,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Answer } from '../answer/entities/answers.entity';
+import {
+  PERCENTAGE_MULTIPLIER,
+  QUIZ_PASSING_THRESHOLD,
+} from '../common/constants';
 import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import { Question, QuestionType } from '../question/entities/question.entity';
 import { User } from '../users/entities/user.entity';
@@ -18,9 +22,6 @@ import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
-
-const PERCENTAGE_MULTIPLIER = 100;
-const QUIZ_PASSING_THRESHOLD = 70;
 
 @Injectable()
 export class QuizService {
@@ -43,33 +44,6 @@ export class QuizService {
   ) {
     this.logger.setContext(QuizService.name);
   }
-
-  // private _toResponseDto(quiz: Quiz): QuizResponseDto {
-  //   return {
-  //     id: quiz.id,
-  //     title: quiz.title,
-  //     description: quiz.description,
-  //     lesson_id: quiz.lesson_id,
-  //     questions:
-  //       quiz.questions?.map((q) => ({
-  //         id: q.id,
-  //         text: q.text,
-  //         type: q.type,
-  //         answers:
-  //           q.answers?.map((a) => ({
-  //             id: a.id,
-  //             text: a.text,
-  //             correct: a.correct,
-  //             created_at: a.created_at,
-  //             updated_at: a.updated_at,
-  //           })) || [],
-  //         created_at: q.created_at,
-  //         updated_at: q.updated_at,
-  //       })) || [],
-  //     created_at: quiz.created_at,
-  //     updated_at: quiz.updated_at,
-  //   };
-  // }
 
   async create(createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     // Validate the quiz structure

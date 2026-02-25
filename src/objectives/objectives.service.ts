@@ -19,7 +19,9 @@ export class ObjectivesService {
     private courseRepository: Repository<Course>,
   ) {}
 
-  async createObjetive(createObjectiveDto: CreateObjectiveDto): Promise<Objective> {
+  async createObjetive(
+    createObjectiveDto: CreateObjectiveDto,
+  ): Promise<Objective> {
     // Verify course exists
     const course = await this.courseRepository.findOne({
       where: { id: createObjectiveDto.courseId },

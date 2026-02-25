@@ -69,7 +69,8 @@ export class CategoriesController {
     message: string;
     data: Category;
   }> {
-    const category = await this.categoriesService.create(createCategoryDto);
+    const category =
+      await this.categoriesService.createCategory(createCategoryDto);
     return {
       message: 'Category created successfully',
       data: category,
@@ -255,7 +256,7 @@ export class CategoriesController {
     message: string;
     data: Category;
   }> {
-    const category = await this.categoriesService.findById(id);
+    const category = await this.categoriesService.findCategoryById(id);
     return {
       message: 'Category retrieved successfully',
       data: category,
@@ -307,7 +308,10 @@ export class CategoriesController {
     message: string;
     data: Category;
   }> {
-    const category = await this.categoriesService.update(id, updateCategoryDto);
+    const category = await this.categoriesService.updateCategory(
+      id,
+      updateCategoryDto,
+    );
     return {
       message: 'Category updated successfully',
       data: category,
@@ -343,7 +347,7 @@ export class CategoriesController {
   async delete(@Param('id') id: string): Promise<{
     message: string;
   }> {
-    await this.categoriesService.delete(id);
+    await this.categoriesService.deleteCategory(id);
     return {
       message: 'Category deleted successfully',
     };
@@ -389,7 +393,8 @@ export class CategoriesController {
     message: string;
     data: { categoryId: string; coursesCount: number };
   }> {
-    const coursesCount = await this.categoriesService.getCoursesCount(id);
+    const coursesCount =
+      await this.categoriesService.getCategoryCoursesCount(id);
     return {
       message: 'Category courses count retrieved successfully',
       data: { categoryId: id, coursesCount },

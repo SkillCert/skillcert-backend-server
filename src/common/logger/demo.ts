@@ -3,9 +3,12 @@ import { CentralizedLoggerService } from './services/centralized-logger.service'
 
 async function demonstrateLogger() {
   // Create logger instances
-  const appLogger = new CentralizedLoggerService('DemoApp');
-  const userLogger = new CentralizedLoggerService('UserService');
-  const quizLogger = new CentralizedLoggerService('QuizService');
+  const appLogger = new CentralizedLoggerService();
+  appLogger.setContext('DemoApp');
+  const userLogger = new CentralizedLoggerService();
+  userLogger.setContext('UserService');
+  const quizLogger = new CentralizedLoggerService();
+  quizLogger.setContext('QuizService');
 
   console.log('🚀 Demonstrating Centralized Logger Service');
   console.log('='.repeat(50));

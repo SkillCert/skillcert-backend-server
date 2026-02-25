@@ -14,7 +14,9 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoriesService {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async createCategory(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
     // Check if category name already exists
     const nameExists = await this.categoriesRepository.nameExists(
       createCategoryDto.name,
@@ -56,7 +58,7 @@ export class CategoriesService {
     }
 
     // Check if category exists
-    const categoryExists = await this.categoriesRepository.exists(id);
+    const categoryExists = await this.categoriesRepository.existsById(id);
     if (!categoryExists) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
@@ -88,7 +90,7 @@ export class CategoriesService {
       throw new BadRequestException('Category ID is required');
     }
 
-    const categoryExists = await this.categoriesRepository.exists(id);
+    const categoryExists = await this.categoriesRepository.existsById(id);
     if (!categoryExists) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }

@@ -12,10 +12,10 @@ export class HealthResponseTransformer {
   }
 
   private static transformIndicators(
-    indicators: Record<string, any>
+    indicators: Record<string, any>,
   ): Record<string, HealthIndicatorStatus> {
     const transformed: Record<string, HealthIndicatorStatus> = {};
-    
+
     for (const [key, value] of Object.entries(indicators)) {
       transformed[key] = {
         status: value.status,
@@ -23,7 +23,7 @@ export class HealthResponseTransformer {
         ...value, // Spread any additional properties
       };
     }
-    
+
     return transformed;
   }
 }

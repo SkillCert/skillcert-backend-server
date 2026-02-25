@@ -28,10 +28,12 @@ describe('DatabaseExceptionFilter', () => {
 
   it('should handle QueryFailedError with unique_violation', () => {
     const exception = {
+      name: 'QueryFailedError',
       code: '23505',
       message: 'duplicate',
       stack: 'stack',
-    } as unknown as QueryFailedError;
+    };
+    Object.setPrototypeOf(exception, QueryFailedError.prototype);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -45,10 +47,12 @@ describe('DatabaseExceptionFilter', () => {
 
   it('should handle QueryFailedError with foreign_key_violation', () => {
     const exception = {
+      name: 'QueryFailedError',
       code: '23503',
       message: 'fk error',
       stack: 'stack',
-    } as unknown as QueryFailedError;
+    };
+    Object.setPrototypeOf(exception, QueryFailedError.prototype);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -62,10 +66,12 @@ describe('DatabaseExceptionFilter', () => {
 
   it('should handle QueryFailedError with not_null_violation', () => {
     const exception = {
+      name: 'QueryFailedError',
       code: '23502',
       message: 'not null',
       stack: 'stack',
-    } as unknown as QueryFailedError;
+    };
+    Object.setPrototypeOf(exception, QueryFailedError.prototype);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -79,10 +85,12 @@ describe('DatabaseExceptionFilter', () => {
 
   it('should handle QueryFailedError with invalid_text_representation', () => {
     const exception = {
+      name: 'QueryFailedError',
       code: '22P02',
       message: 'invalid input',
       stack: 'stack',
-    } as unknown as QueryFailedError;
+    };
+    Object.setPrototypeOf(exception, QueryFailedError.prototype);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(
@@ -96,10 +104,12 @@ describe('DatabaseExceptionFilter', () => {
 
   it('should handle QueryFailedError with unknown code', () => {
     const exception = {
+      name: 'QueryFailedError',
       code: '99999',
       message: 'unknown',
       stack: 'stack',
-    } as unknown as QueryFailedError;
+    };
+    Object.setPrototypeOf(exception, QueryFailedError.prototype);
     filter.catch(exception, mockHost);
     expect(mockResponse.status).toHaveBeenCalledWith(
       HttpStatus.INTERNAL_SERVER_ERROR,

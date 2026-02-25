@@ -1,11 +1,11 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
 import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout.interceptor';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,8 @@ async function bootstrap() {
 
   // Enable CORS for the Next.js frontend
   app.enableCors({
-    origin: configService.get<string>('FRONTEND_URL') ?? 'http://localhost:3001',
+    origin:
+      configService.get<string>('FRONTEND_URL') ?? 'http://localhost:3001',
     credentials: true, // Required when using cookies for JWT
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

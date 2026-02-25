@@ -61,7 +61,6 @@ export class LessonsService {
     id: string,
     updateLessonDto: UpdateLessonDto,
   ): Promise<LessonResponseDto> {
-    await this.findOne(id); // Verify it exists (throws if not found)
     const entity = await this.lessonRepository.findOne({ where: { id } });
 
     if (!entity) throw new NotFoundException(`Lesson with ID ${id} not found`);

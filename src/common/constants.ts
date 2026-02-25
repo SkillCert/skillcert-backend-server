@@ -1,50 +1,47 @@
-/**
- * Column length constraints used across entities.
- */
+// Column length constraints used in entity definitions
 export const COLUMN_LENGTHS = {
   USER_NAME: 100,
-  CATEGORY_NAME: 100,
-  CATEGORY_COLOR: 7,
-  FILENAME: 500,
-  ORIGINAL_NAME: 500,
+  TITLE: 255,
+  URL: 2048,
+  SHORT_TEXT: 100,
+  FILENAME: 255,
+  ORIGINAL_NAME: 255,
   MIMETYPE: 100,
-} as const;
+  CATEGORY_NAME: 100,
+  CATEGORY_COLOR: 50,
+};
 
-/**
- * Number of bcrypt salt rounds used for password hashing.
- */
-export const PASSWORD_SALT_ROUNDS = 10;
-
-/**
- * Validation constraints for DTOs.
- */
+// Validation constraints used in DTOs
 export const VALIDATION_CONSTRAINTS = {
-  COURSE_TITLE_MIN_LENGTH: 3,
-  COURSE_DESCRIPTION_MIN_LENGTH: 10,
+  MAX_TITLE_LENGTH: 255,
+  MAX_DESCRIPTION_LENGTH: 5000,
+  MAX_URL_LENGTH: 2048,
+  MIN_PASSWORD_LENGTH: 8,
   LESSON_RESOURCE_TITLE_MAX_LENGTH: 255,
   LESSON_RESOURCE_DESCRIPTION_MAX_LENGTH: 1000,
-} as const;
+  COURSE_TITLE_MIN_LENGTH: 3,
+  COURSE_DESCRIPTION_MIN_LENGTH: 10,
+};
 
-/**
- * Percentage multiplier for completion/score calculations.
- */
+// Bcrypt salt rounds for password hashing
+export const PASSWORD_SALT_ROUNDS = 10;
+
+// Percentage multiplier (100)
 export const PERCENTAGE_MULTIPLIER = 100;
 
-/**
- * Network-related constants.
- */
-export const NETWORK = {
-  DEFAULT_DB_PORT: 3306,
-} as const;
+// Quiz passing threshold percentage
+export const QUIZ_PASSING_THRESHOLD = 70;
 
-/**
- * Radix for parsing database port numbers.
- */
-export const DATABASE_PORT_RADIX = 10;
-
-/**
- * Test/demo data used by admin controller.
- */
+// Test/mock data for admin dashboard
 export const TEST_DATA = {
   TOTAL_COURSES: 25,
-} as const;
+};
+
+// Network configuration
+export const NETWORK = {
+  DEFAULT_DB_PORT: 5432,
+  DEFAULT_PORT: 3000,
+};
+
+// Radix used when parsing the DB port string to number
+export const DATABASE_PORT_RADIX = 10;

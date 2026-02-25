@@ -33,7 +33,13 @@ export class UsersRepository {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
+    const user = this.userRepository.create({
+      ...createUserDto,
+      // Normalise wallet address to lowercase for consistent uniqueness checks
+      walletAddress: createUserDto.walletAddress
+        ? createUserDto.walletAddress.toLowerCase()
+        : null,
+    });
     return await this.userRepository.save(user);
   }
 
@@ -49,6 +55,7 @@ export class UsersRepository {
         'user.name',
         'user.email',
         'user.role',
+        'user.walletAddress',
         'user.createdAt',
         'user.updatedAt',
       ])
@@ -70,7 +77,15 @@ export class UsersRepository {
   async findById(id: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { id },
-      select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'walletAddress',
+        'createdAt',
+        'updatedAt',
+      ],
     });
   }
 
@@ -93,8 +108,48 @@ export class UsersRepository {
     });
   }
 
+  async findByStellarPublicKey(stellarPublicKey: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { stellarPublicKey },
+    });
+  }
+
+  /**
+   * Used specifically for authentication to retrieve the user's hashed password.
+   */
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+  }
+
+  /** Find a user by their linked wallet address (case-insensitive). */
+  async findByWalletAddress(walletAddress: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { walletAddress: walletAddress.toLowerCase() },
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'walletAddress',
+        'createdAt',
+        'updatedAt',
+      ],
+    });
+  }
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
     await this.userRepository.update(id, updateUserDto);
+    return await this.findById(id);
+  }
+
+  /** Persist only the walletAddress field for an existing user. */
+  async linkWallet(id: string, walletAddress: string): Promise<User | null> {
+    await this.userRepository.update(id, {
+      walletAddress: walletAddress.toLowerCase(),
+    });
     return await this.findById(id);
   }
 
@@ -112,6 +167,24 @@ export class UsersRepository {
     const query = this.userRepository
       .createQueryBuilder('user')
       .where('user.email = :email', { email });
+
+    if (excludeId) {
+      query.andWhere('user.id != :excludeId', { excludeId });
+    }
+
+    const count = await query.getCount();
+    return count > 0;
+  }
+
+  async walletExists(
+    walletAddress: string,
+    excludeId?: string,
+  ): Promise<boolean> {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.walletAddress = :walletAddress', {
+        walletAddress: walletAddress.toLowerCase(),
+      });
 
     if (excludeId) {
       query.andWhere('user.id != :excludeId', { excludeId });

@@ -1,33 +1,34 @@
 import {
-  CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
+import { Reflector } from '@nestjs/core';
+import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-  constructor(private readonly configService: ConfigService) {}
+export class AuthGuard extends PassportAuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
 
-  canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers['authorization'];
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing or invalid authorization token');
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    try {
-      const secret = this.configService.get<string>('JWT_SECRET');
-      const decoded = jwt.verify(token, secret);
-      request.user = decoded;
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
       return true;
-    } catch {
-      throw new UnauthorizedException('Invalid or expired token');
     }
+    return super.canActivate(context);
+  }
+
+  handleRequest(err: any, user: any, _info: any) {
+    // You can throw an exception based on either "info" or "err" arguments
+    if (err || !user) {
+      throw err || new UnauthorizedException('Authentication required');
+    }
+    return user;
   }
 }

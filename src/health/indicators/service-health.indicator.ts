@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
+  HealthCheckError,
   HealthIndicator,
   HealthIndicatorResult,
-  HealthCheckError,
 } from '@nestjs/terminus';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Course } from '../../entities/course.entity';
 import { Category } from '../../entities/category.entity';
+import { Course } from '../../entities/course.entity';
 
 @Injectable()
 export class ServiceHealthIndicator extends HealthIndicator {
