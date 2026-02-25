@@ -32,7 +32,7 @@ import { LessonResourcesService } from './lesson-resources.service';
 export class LessonResourcesController {
   constructor(
     private readonly lessonResourcesService: LessonResourcesService,
-  ) {}
+  ) { }
 
   @Post()
   @ApiOperation({ summary: 'Upload a lesson resource file' })

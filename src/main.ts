@@ -1,5 +1,4 @@
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
@@ -9,7 +8,6 @@ import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.get(ConfigService); // Initialize ConfigService
 
   // Apply global exception filters
   app.useGlobalFilters(new DatabaseExceptionFilter());

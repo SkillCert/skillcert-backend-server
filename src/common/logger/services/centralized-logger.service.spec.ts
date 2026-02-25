@@ -42,7 +42,7 @@ describe('CentralizedLoggerService', () => {
     });
 
     it('should set custom context when provided', () => {
-      const customService = new CentralizedLoggerService('CustomService');
+      const customService = new CentralizedLoggerService();
       expect(customService.getContext()).toBe('CustomService');
     });
 

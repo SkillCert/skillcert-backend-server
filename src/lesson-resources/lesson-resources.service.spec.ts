@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { LESSON_RESOURCES_PATH } from 'src/lesson-resources/constants';
 import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
+import { CentralizedLoggerService } from 'src/common/logger/services/centralized-logger.service';
 import { Repository } from 'typeorm';
 import {
   LessonResource,
@@ -75,6 +76,10 @@ describe('LessonResourcesService', () => {
         {
           provide: LOCAL_FILE_STORAGE_SERVICE,
           useValue: mockFileStorageService,
+        },
+        {
+          provide: CentralizedLoggerService,
+          useValue: { info: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() },
         },
       ],
     }).compile();
@@ -248,7 +253,7 @@ describe('LessonResourcesService', () => {
 
       const findOneSpy = jest
         .spyOn(service, 'findOne')
-        .mockResolvedValue(mockResource);
+        .mockResolvedValue(mockResource as any);
       mockRepository.delete.mockResolvedValue({ affected: 1 } as any);
 
       await service.permanentDelete('resource-uuid');

@@ -298,22 +298,4 @@ export class LessonResourcesService {
     await this.lessonResourceRepository.increment({ id }, 'download_count', 1);
   }
 
-  protected getResourceTypeFromMimetype(mimetype: string): ResourceType {
-    if (mimetype.startsWith('image/')) return ResourceType.IMAGE;
-    if (mimetype.startsWith('video/')) return ResourceType.VIDEO;
-    if (mimetype.startsWith('audio/')) return ResourceType.AUDIO;
-    if (
-      mimetype.includes('pdf') ||
-      mimetype.includes('document') ||
-      mimetype.includes('text') ||
-      mimetype.includes('spreadsheet') ||
-      mimetype.includes('presentation')
-    ) {
-      return ResourceType.DOCUMENT;
-    }
-    if (mimetype.includes('zip') || mimetype.includes('rar')) {
-      return ResourceType.ARCHIVE;
-    }
-    return ResourceType.OTHER;
-  }
 }

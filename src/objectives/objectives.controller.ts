@@ -26,7 +26,7 @@ import { ObjectivesService } from './objectives.service';
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class ObjectivesController {
-  constructor(private readonly objectivesService: ObjectivesService) {}
+  constructor(private readonly objectivesService: ObjectivesService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new objective' })

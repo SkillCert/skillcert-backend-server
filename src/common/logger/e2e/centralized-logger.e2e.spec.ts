@@ -190,7 +190,7 @@ describe('CentralizedLoggerService E2E', () => {
   describe('Context Management', () => {
     it('should maintain different contexts for different services', () => {
       // Create another logger instance with different context
-      const anotherLogger = new CentralizedLoggerService('AnotherService');
+      const anotherLogger = new CentralizedLoggerService();
 
       expect(loggerService.getContext()).toBe('Application');
       expect(anotherLogger.getContext()).toBe('AnotherService');

@@ -21,7 +21,7 @@ export class CoursesService {
     private readonly coursesRepository: CoursesRepository,
     private readonly usersService: UsersService,
     private readonly categoriesService: CategoriesService,
-  ) {}
+  ) { }
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
     // Validate that the professor exists and has the right role
@@ -74,6 +74,8 @@ export class CoursesService {
           name: course.professor.name,
           email: course.professor.email,
           role: course.professor.role,
+          stellarPublicKey: course.professor.stellarPublicKey ?? null,
+          walletAddress: course.professor.walletAddress ?? null,
           createdAt: course.professor.createdAt,
           updatedAt: course.professor.updatedAt,
         },
@@ -85,14 +87,14 @@ export class CoursesService {
         })),
         category: course.category
           ? {
-              id: course.category.id,
-              name: course.category.name,
-              description: course.category.description,
-              color: course.category.color,
-              isActive: course.category.isActive,
-              createdAt: course.category.created_at,
-              updatedAt: course.category.updated_at,
-            }
+            id: course.category.id,
+            name: course.category.name,
+            description: course.category.description,
+            color: course.category.color,
+            isActive: course.category.isActive,
+            createdAt: course.category.created_at,
+            updatedAt: course.category.updated_at,
+          }
           : undefined,
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,

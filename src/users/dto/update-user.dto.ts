@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsEnum,
+  IsEthereumAddress,
   IsOptional,
   IsString,
   MinLength,
@@ -25,4 +26,14 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(56)
+  stellarPublicKey?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsEthereumAddress()
+  walletAddress?: string;
 }

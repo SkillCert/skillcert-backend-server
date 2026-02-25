@@ -6,7 +6,7 @@ import { CourseProgressService } from '../providers/course-progress.service';
 @Controller('course-progress')
 @ApiTags('course-progress')
 export class CourseProgressController {
-  constructor(private readonly progressService: CourseProgressService) {}
+  constructor(private readonly progressService: CourseProgressService) { }
 
   @Post('update-course-progress')
   @ApiOperation({ summary: 'Update course progress' })

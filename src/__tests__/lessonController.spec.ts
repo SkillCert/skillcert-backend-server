@@ -23,9 +23,9 @@ describe('LessonsController', () => {
       const fakeLessons = [{ id: '1', title: 'Lesson 1' }];
       (lessonsService.findAll as jest.Mock).mockResolvedValue(fakeLessons);
 
-      const result = await lessonsController.findAll(1, 10);
-      expect(result).toEqual(fakeLessons);
-      expect(lessonsService.findAll).toHaveBeenCalledWith(1, 10);
+      const result = await lessonsController.findAll();
+      expect(result).toEqual({ message: 'Lessons retrieved successfully', data: fakeLessons });
+      expect(lessonsService.findAll).toHaveBeenCalledWith();
     });
   });
 
@@ -35,7 +35,7 @@ describe('LessonsController', () => {
       (lessonsService.findOne as jest.Mock).mockResolvedValue(fakeLesson);
 
       const result = await lessonsController.findOne('1');
-      expect(result).toEqual(fakeLesson);
+      expect(result).toEqual({ message: 'Lesson retrieved successfully', data: fakeLesson });
       expect(lessonsService.findOne).toHaveBeenCalledWith('1');
     });
   });
@@ -47,9 +47,9 @@ describe('LessonsController', () => {
         fakeLessons,
       );
 
-      const result = await lessonsController.findByModuleId('10', 1, 10);
-      expect(result).toEqual(fakeLessons);
-      expect(lessonsService.findByModuleId).toHaveBeenCalledWith('10', 1, 10);
+      const result = await lessonsController.findByModuleId('10');
+      expect(result).toEqual({ message: 'Lessons by module fetched successfully', data: fakeLessons });
+      expect(lessonsService.findByModuleId).toHaveBeenCalledWith('10');
     });
   });
 
@@ -60,7 +60,7 @@ describe('LessonsController', () => {
       (lessonsService.create as jest.Mock).mockResolvedValue(newLesson);
 
       const result = await lessonsController.create(dto as any);
-      expect(result).toEqual(newLesson);
+      expect(result).toEqual({ message: 'Lesson created successfully', data: newLesson });
       expect(lessonsService.create).toHaveBeenCalledWith(dto);
     });
   });
@@ -72,7 +72,7 @@ describe('LessonsController', () => {
       (lessonsService.update as jest.Mock).mockResolvedValue(updatedLesson);
 
       const result = await lessonsController.update('1', dto as any);
-      expect(result).toEqual(updatedLesson);
+      expect(result).toEqual({ message: 'Lesson updated successfully', data: updatedLesson });
       expect(lessonsService.update).toHaveBeenCalledWith('1', dto);
     });
   });

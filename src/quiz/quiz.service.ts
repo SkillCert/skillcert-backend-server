@@ -45,33 +45,6 @@ export class QuizService {
     this.logger.setContext(QuizService.name);
   }
 
-  protected toResponseDto(quiz: Quiz): QuizResponseDto {
-    return {
-      id: quiz.id,
-      title: quiz.title,
-      description: quiz.description,
-      lesson_id: quiz.lesson_id,
-      questions:
-        quiz.questions?.map((q) => ({
-          id: q.id,
-          text: q.text,
-          type: q.type,
-          answers:
-            q.answers?.map((a) => ({
-              id: a.id,
-              text: a.text,
-              correct: a.correct,
-              created_at: a.created_at,
-              updated_at: a.updated_at,
-            })) || [],
-          created_at: q.created_at,
-          updated_at: q.updated_at,
-        })) || [],
-      created_at: quiz.created_at,
-      updated_at: quiz.updated_at,
-    };
-  }
-
   async create(createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     // Validate the quiz structure
     this.quizValidationService.validateQuiz(createQuizDto);
@@ -236,7 +209,10 @@ export class QuizService {
         );
       }
 
-      const scoreResult = this.scoreQuestion(question, responseDto);
+      const scoreResult = this.scoreQuestion(
+        question as Question,
+        responseDto,
+      );
 
       // Save user response
       const userResponse = this.userQuestionResponseRepository.create({

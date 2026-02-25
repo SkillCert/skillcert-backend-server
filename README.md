@@ -1,98 +1,164 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# SkillCert Backend Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS REST API that manages the off-chain metadata for the SkillCert platform — including users, courses, modules, lessons, enrollments, quizzes, and reviews. It uses PostgreSQL via TypeORM and is designed to work alongside the SkillCert frontend.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Make sure the following are installed on your machine before proceeding:
 
-## Project setup
+| Tool | Version | Install |
+|------|---------|---------|
+| Node.js | >= 18.x | https://nodejs.org |
+| npm | >= 9.x | Comes with Node.js |
+| PostgreSQL | >= 14.x | https://www.postgresql.org/download |
+| Git | any | https://git-scm.com |
+
+---
+
+## 1. Clone the Repository
 
 ```bash
-$ npm install
+git clone https://github.com/<your-org>/skillcert-backend-server.git
+cd skillcert-backend-server
 ```
 
-## Compile and run the project
+---
+
+## 2. Install Dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+---
+
+## 3. Set Up Environment Variables
+
+Create a `.env` file in the project root by copying the example below:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env   # if an example exists, otherwise create it manually
 ```
 
-## Deployment
+Then open `.env` and fill in your values:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```env
+# Application
+NODE_ENV=development
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+# Database (PostgreSQL)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+DB_DATABASE=skillcert
+```
+
+> **Note:** When `NODE_ENV` is not `production`, TypeORM will auto-synchronize the database schema on startup (`synchronize: true`). Never use this in production — use migrations instead.
+
+---
+
+## 4. Create the Database
+
+Log into PostgreSQL and create the database:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+psql -U your_db_user -c "CREATE DATABASE skillcert;"
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Or use a GUI tool like pgAdmin or TablePlus.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 5. Run the Server
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Development mode** (auto-reloads on file changes):
 
-## Support
+```bash
+npm run start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Standard start:**
 
-## Stay in touch
+```bash
+npm run start
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Production mode** (requires a build first):
 
-## License
+```bash
+npm run build
+npm run start:prod
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The server will be available at `http://localhost:3000` by default.
+
+---
+
+## 6. API Documentation (Swagger)
+
+Once the server is running, open your browser and navigate to:
+
+```
+http://localhost:3000/api
+```
+
+This displays the full interactive Swagger UI with all available endpoints.
+
+---
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run start` | Start the server |
+| `npm run start:dev` | Start in watch mode (development) |
+| `npm run start:debug` | Start with debugger attached |
+| `npm run start:prod` | Start compiled production build |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm run lint` | Run ESLint and auto-fix issues |
+| `npm run format` | Format code with Prettier |
+| `npm run test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:cov` | Run tests with coverage report |
+| `npm run test:e2e` | Run end-to-end tests |
+
+---
+
+## Project Structure
+
+```
+src/
+├── users/            # User accounts and roles
+├── courses/          # Course metadata
+├── modules/          # Course modules (sections)
+├── lessons/          # Individual lessons within modules
+├── enrollment/       # User-course enrollment records
+├── quiz/             # Quizzes and questions tied to lessons
+├── reviews/          # Course reviews and ratings
+├── categories/       # Course categories
+├── objectives/       # Learning objectives per course
+├── course-progress/  # Tracks lesson completion per enrollment
+├── references/       # External reference links for lessons
+├── lesson-resources/ # File/media resources for lessons
+├── common/           # Shared utilities, guards, decorators
+├── config/           # Database and app configuration
+└── health/           # Health check endpoint
+```
+
+For a full explanation of how these entities relate to each other, see [`docs/data.md`](./docs/data.md).
+
+---
+
+## Environment Variable Reference
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `NODE_ENV` | No | `development` | App environment. Set to `production` to disable auto-sync |
+| `DB_HOST` | Yes | — | PostgreSQL host |
+| `DB_PORT` | Yes | `5432` | PostgreSQL port |
+| `DB_USERNAME` | Yes | — | Database user |
+| `DB_PASSWORD` | Yes | — | Database password |
+| `DB_DATABASE` | Yes | — | Database name |

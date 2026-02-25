@@ -1,55 +1,54 @@
-/**
- * Application-wide constants
- */
-
-// Database column length constraints
+// Column length constraints used in entity definitions
 export const COLUMN_LENGTHS = {
   USER_NAME: 100,
+  TITLE: 255,
+  URL: 2048,
+  SHORT_TEXT: 100,
+  FILENAME: 255,
+  ORIGINAL_NAME: 255,
+  MIMETYPE: 100,
   CATEGORY_NAME: 100,
   CATEGORY_DESCRIPTION: 500,
-  CATEGORY_COLOR: 7,
+  CATEGORY_COLOR: 50,
   COURSE_TITLE: 200,
   COURSE_DESCRIPTION: 2000,
   LESSON_TITLE: 200,
   LESSON_CONTENT: 10000,
   RESOURCE_TITLE: 200,
   RESOURCE_URL: 500,
-  FILENAME: 255,
-  ORIGINAL_NAME: 255,
-  MIMETYPE: 100,
-} as const;
+};
 
-// Validation constraints for DTOs
+// Validation constraints used in DTOs
 export const VALIDATION_CONSTRAINTS = {
+  MAX_TITLE_LENGTH: 255,
+  MAX_DESCRIPTION_LENGTH: 5000,
+  MAX_URL_LENGTH: 2048,
+  MIN_PASSWORD_LENGTH: 8,
+  LESSON_RESOURCE_TITLE_MAX_LENGTH: 255,
+  LESSON_RESOURCE_DESCRIPTION_MAX_LENGTH: 1000,
   COURSE_TITLE_MIN_LENGTH: 3,
   COURSE_DESCRIPTION_MIN_LENGTH: 10,
-  LESSON_RESOURCE_TITLE_MAX_LENGTH: 200,
-  LESSON_RESOURCE_DESCRIPTION_MAX_LENGTH: 1000,
-} as const;
+};
 
-// Password hashing
+// Bcrypt salt rounds for password hashing
 export const PASSWORD_SALT_ROUNDS = 10;
 
-// Percentage calculations
+// Percentage multiplier (100)
 export const PERCENTAGE_MULTIPLIER = 100;
 
-// Quiz settings
+// Quiz passing threshold percentage
 export const QUIZ_PASSING_THRESHOLD = 70;
 
-// Database configuration
-export const DATABASE_PORT_RADIX = 10;
+// Test/mock data for admin dashboard
+export const TEST_DATA = {
+  TOTAL_COURSES: 25,
+};
 
 // Network configuration
 export const NETWORK = {
-  DEFAULT_DB_PORT: 3306,
-  DEFAULT_APP_PORT: 3000,
-} as const;
+  DEFAULT_DB_PORT: 5432,
+  DEFAULT_PORT: 3000,
+};
 
-// Test data for development/testing
-export const TEST_DATA = {
-  SAMPLE_USER_ID: '00000000-0000-0000-0000-000000000001',
-  SAMPLE_COURSE_ID: '00000000-0000-0000-0000-000000000002',
-  TOTAL_COURSES: 100,
-  TOTAL_USERS: 500,
-  TOTAL_ENROLLMENTS: 1200,
-} as const;
+// Radix used when parsing the DB port string to number
+export const DATABASE_PORT_RADIX = 10;

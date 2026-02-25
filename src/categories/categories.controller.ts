@@ -29,7 +29,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 @ApiTags('categories')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(private readonly categoriesService: CategoriesService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new category' })

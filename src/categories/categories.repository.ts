@@ -11,7 +11,7 @@ export class CategoriesRepository {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-  ) {}
+  ) { }
 
   private applyDateFilters(
     queryBuilder: SelectQueryBuilder<Category>,
