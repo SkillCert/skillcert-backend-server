@@ -33,4 +33,10 @@ export class Enrollment {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'varchar', length: 64, unique: true, nullable: true })
+  certificateTxHash: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  issuedAt: Date | null;
 }
