@@ -33,3 +33,6 @@ export class Answer {
   @UpdateDateColumn()
   updated_at: Date;
 }
+
+// Alias for backward compatibility
+export { Answers as Answer };
