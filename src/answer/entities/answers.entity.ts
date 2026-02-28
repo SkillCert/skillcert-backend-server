@@ -33,3 +33,4 @@ export class Answer {
   @UpdateDateColumn()
   updated_at: Date;
 }
+

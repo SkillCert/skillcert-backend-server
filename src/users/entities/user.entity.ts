@@ -39,7 +39,7 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: 42,
+    length: 56,
     unique: true,
     nullable: true,
     default: null,

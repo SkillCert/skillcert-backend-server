@@ -61,6 +61,9 @@ export class Course {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ type: 'varchar', length: 56, nullable: true })
+  sorobanContractId: string | null;
+
   acquireReviewAverageRating(): number {
     if (!this.reviews || this.reviews.length === 0) {
       return 0;

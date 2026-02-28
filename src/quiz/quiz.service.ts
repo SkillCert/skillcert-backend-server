@@ -17,7 +17,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { QuizResponseDto } from './dto/quiz-response.dto';
 import { QuestionResultDto, QuizResultDto } from './dto/quiz-result.dto';
-import { QuestionResponseDto, SubmitQuizDto } from './dto/submit-quiz.dto';
+import { UserAnswerDto, SubmitQuizDto } from './dto/submit-quiz.dto';
 import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
@@ -157,8 +157,15 @@ export class QuizService {
       throw new NotFoundException('User not found');
     }
 
-    // Get quiz with questions and answers
-    const quiz = await this.findOne(submitQuizDto.quiz_id);
+    // Get quiz with questions and answers (raw entity, not DTO)
+    const quiz = await this.quizRepository.findOne({
+      where: { id: submitQuizDto.quiz_id },
+      relations: ['questions', 'questions.answers'],
+    });
+
+    if (!quiz) {
+      throw new NotFoundException(`Quiz with ID ${submitQuizDto.quiz_id} not found`);
+    }
 
     // Check if user already has an attempt (since we only allow one attempt per user per quiz)
     const existingAttempt = await this.quizAttemptRepository.findOne({
@@ -259,7 +266,7 @@ export class QuizService {
 
   private scoreQuestion(
     question: Question,
-    responseDto: QuestionResponseDto,
+    responseDto: UserAnswerDto,
   ): {
     isCorrect: boolean;
     pointsEarned: number;
@@ -292,7 +299,7 @@ export class QuizService {
 
   private scoreUniqueQuestion(
     question: Question,
-    responseDto: QuestionResponseDto,
+    responseDto: UserAnswerDto,
     correctAnswers: Answer[],
   ) {
     if (!responseDto.selected_answer_id) {
@@ -320,7 +327,7 @@ export class QuizService {
 
   private scoreMultipleChoiceQuestion(
     question: Question,
-    responseDto: QuestionResponseDto,
+    responseDto: UserAnswerDto,
     correctAnswers: Answer[],
   ) {
     if (!responseDto.selected_answer_id) {
@@ -348,7 +355,7 @@ export class QuizService {
 
   private scoreTextQuestion(
     _question: Question,
-    responseDto: QuestionResponseDto,
+    responseDto: UserAnswerDto,
     correctAnswers: Answer[],
   ) {
     if (!responseDto.text_response) {
