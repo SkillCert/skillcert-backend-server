@@ -77,9 +77,47 @@ export class LessonResourcesService {
     if (!file) {
       throw new BadRequestException('No file provided');
     }
-    const lessonResource = this.lessonResourceRepository.create(fileUploadDto);
-    const saved = await this.lessonResourceRepository.save(lessonResource);
-    return this.toResponseDto(saved);
+
+    try {
+      const uploadResult = await this.fileStorageService.uploadFile(
+        file,
+        LESSON_RESOURCES_PATH,
+      );
+
+      let resourceType = ResourceType.DOCUMENT;
+      if (file.mimetype.startsWith('video/')) {
+        resourceType = ResourceType.VIDEO;
+      } else if (file.mimetype.startsWith('audio/')) {
+        resourceType = ResourceType.AUDIO;
+      } else if (file.mimetype.startsWith('image/')) {
+        resourceType = ResourceType.IMAGE;
+      }
+
+      const lessonResource = this.lessonResourceRepository.create({
+        title: fileUploadDto.title,
+        description: fileUploadDto.description,
+        filename: uploadResult.filename,
+        original_name: uploadResult.originalName,
+        mimetype: uploadResult.mimetype,
+        size: uploadResult.size,
+        file_path: uploadResult.path,
+        file_url: uploadResult.url,
+        resource_type: resourceType,
+        lesson_id: fileUploadDto.lesson_id,
+      });
+
+      const saved = await this.lessonResourceRepository.save(lessonResource);
+      return this.toResponseDto(saved);
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : 'Unknown error';
+
+      throw new BadRequestException(`Resource creation failed: ${msg}`);
+    }
   }
 
   async findAll(
@@ -297,5 +335,4 @@ export class LessonResourcesService {
   async incrementDownloadCount(id: string): Promise<void> {
     await this.lessonResourceRepository.increment({ id }, 'download_count', 1);
   }
-
 }

@@ -26,7 +26,7 @@ import { ObjectivesService } from './objectives.service';
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class ObjectivesController {
-  constructor(private readonly objectivesService: ObjectivesService) { }
+  constructor(private readonly objectivesService: ObjectivesService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new objective' })
@@ -55,7 +55,8 @@ export class ObjectivesController {
   })
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createObjectiveDto: CreateObjectiveDto) {
-    const objective = await this.objectivesService.createObjetive(createObjectiveDto);
+    const objective =
+      await this.objectivesService.createObjetive(createObjectiveDto);
     return {
       success: true,
       message: 'Objective created successfully',

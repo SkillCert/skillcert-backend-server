@@ -6,7 +6,7 @@ import { DATABASE_PORT_RADIX, NETWORK } from '../common/constants';
 dotenv.config();
 
 export const databaseConfig: TypeOrmModuleOptions = {
-  type: 'mariadb',
+  type: 'postgres',
   host: process.env.DB_HOST,
   port: parseInt(
     process.env.DB_PORT || NETWORK.DEFAULT_DB_PORT.toString(),
@@ -14,7 +14,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
   ),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  database: process.env.DB_DATABASE,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
   logging: process.env.DB_LOGGING === 'true',

@@ -202,17 +202,14 @@ export class QuizService {
     for (const responseDto of submitQuizDto.responses) {
       const question = quiz.questions.find(
         (q) => q.id === responseDto.question_id,
-      );
+      ) as unknown as Question;
       if (!question) {
         throw new BadRequestException(
           `Question ${responseDto.question_id} not found in quiz`,
         );
       }
 
-      const scoreResult = this.scoreQuestion(
-        question as Question,
-        responseDto,
-      );
+      const scoreResult = this.scoreQuestion(question, responseDto);
 
       // Save user response
       const userResponse = this.userQuestionResponseRepository.create({

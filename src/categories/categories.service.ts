@@ -12,9 +12,11 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly categoriesRepository: CategoriesRepository) { }
+  constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async createCategory(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
     // Check if category name already exists
     const nameExists = await this.categoriesRepository.nameExists(
       createCategoryDto.name,
@@ -126,5 +128,26 @@ export class CategoriesService {
     }
 
     return category.courses ? category.courses.length : 0;
+  }
+
+  // Alias methods matching controller expectations
+  async create(dto: CreateCategoryDto): Promise<Category> {
+    return this.createCategory(dto);
+  }
+
+  async findById(id: string): Promise<Category> {
+    return this.findCategoryById(id);
+  }
+
+  async update(id: string, dto: UpdateCategoryDto): Promise<Category> {
+    return this.updateCategory(id, dto);
+  }
+
+  async delete(id: string): Promise<void> {
+    return this.deleteCategory(id);
+  }
+
+  async getCoursesCount(id: string): Promise<number> {
+    return this.getCategoryCoursesCount(id);
   }
 }

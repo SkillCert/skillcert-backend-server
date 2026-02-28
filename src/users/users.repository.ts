@@ -11,7 +11,7 @@ export class UsersRepository {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   private applyDateFilters(
     queryBuilder: SelectQueryBuilder<User>,
@@ -77,7 +77,15 @@ export class UsersRepository {
   async findById(id: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { id },
-      select: ['id', 'name', 'email', 'role', 'walletAddress', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'walletAddress',
+        'createdAt',
+        'updatedAt',
+      ],
     });
   }
 
@@ -121,7 +129,15 @@ export class UsersRepository {
   async findByWalletAddress(walletAddress: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { walletAddress: walletAddress.toLowerCase() },
-      select: ['id', 'name', 'email', 'role', 'walletAddress', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'walletAddress',
+        'createdAt',
+        'updatedAt',
+      ],
     });
   }
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
@@ -160,7 +176,10 @@ export class UsersRepository {
     return count > 0;
   }
 
-  async walletExists(walletAddress: string, excludeId?: string): Promise<boolean> {
+  async walletExists(
+    walletAddress: string,
+    excludeId?: string,
+  ): Promise<boolean> {
     const query = this.userRepository
       .createQueryBuilder('user')
       .where('user.walletAddress = :walletAddress', {

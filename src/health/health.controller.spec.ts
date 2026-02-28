@@ -1,11 +1,11 @@
+import {
+  DiskHealthIndicator,
+  HealthCheckService,
+  MemoryHealthIndicator,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
-import {
-  HealthCheckService,
-  TypeOrmHealthIndicator,
-  MemoryHealthIndicator,
-  DiskHealthIndicator,
-} from '@nestjs/terminus';
 import { ServiceHealthIndicator } from './indicators/service-health.indicator';
 
 describe('HealthController', () => {

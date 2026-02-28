@@ -2,9 +2,9 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CentralizedLoggerService } from 'src/common/logger/services/centralized-logger.service';
 import { LESSON_RESOURCES_PATH } from 'src/lesson-resources/constants';
 import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
-import { CentralizedLoggerService } from 'src/common/logger/services/centralized-logger.service';
 import { Repository } from 'typeorm';
 import {
   LessonResource,
@@ -17,6 +17,17 @@ import { LessonResourcesService } from './lesson-resources.service';
 describe('LessonResourcesService', () => {
   let service: LessonResourcesService;
 
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+    getMany: jest.fn().mockResolvedValue([]),
+  };
+
   const mockRepository = {
     create: jest.fn(),
     save: jest.fn(),
@@ -25,6 +36,7 @@ describe('LessonResourcesService', () => {
     update: jest.fn(),
     increment: jest.fn(),
     delete: jest.fn(),
+    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
   } as unknown as jest.Mocked<Repository<LessonResource>>;
 
   const mockFileStorageService: jest.Mocked<FileStorageInterface> = {
@@ -65,6 +77,23 @@ describe('LessonResourcesService', () => {
     },
   ] as LessonResource[];
 
+  const mockLessonResourceResponses = mockLessonResources.map((resource) => ({
+    id: resource.id,
+    title: resource.title,
+    description: resource.description,
+    filename: resource.filename,
+    originalName: resource.original_name,
+    mimetype: resource.mimetype,
+    size: resource.size,
+    filePath: resource.file_path,
+    fileUrl: resource.file_url,
+    resourceType: resource.resource_type,
+    lessonId: resource.lesson_id,
+    downloadCount: resource.download_count,
+    isActive: resource.is_active,
+    createdAt: resource.created_at,
+  }));
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -79,7 +108,13 @@ describe('LessonResourcesService', () => {
         },
         {
           provide: CentralizedLoggerService,
-          useValue: { info: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() },
+          useValue: {
+            setContext: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            debug: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -153,7 +188,7 @@ describe('LessonResourcesService', () => {
       expect(saveSpyRepository).toHaveBeenCalledWith(
         expect.objectContaining(lessonResourceFields),
       );
-      expect(result).toEqual(mockLessonResource);
+      expect(result).toEqual(mockLessonResourceResponses[0]);
     });
 
     it('should throw BadRequestException when no file provided', async () => {
@@ -175,18 +210,20 @@ describe('LessonResourcesService', () => {
 
   describe('findAll', () => {
     it('should return all active lesson resources', async () => {
-      const findSpyRepository = jest.spyOn(mockRepository, 'find');
-
-      mockRepository.find.mockResolvedValue(mockLessonResources);
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([
+        mockLessonResources,
+        mockLessonResources.length,
+      ]);
 
       const result = await service.findAll();
 
-      expect(findSpyRepository).toHaveBeenCalledWith({
-        relations: ['lesson'],
-        where: { is_active: true },
-        order: { created_at: 'DESC' },
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith(
+        'resource',
+      );
+      expect(result).toEqual({
+        resources: mockLessonResourceResponses,
+        total: mockLessonResources.length,
       });
-      expect(result).toEqual(mockLessonResources);
     });
   });
 
@@ -202,7 +239,7 @@ describe('LessonResourcesService', () => {
         where: { id: '1', is_active: true },
         relations: ['lesson'],
       });
-      expect(result).toEqual(mockResource);
+      expect(result).toEqual(mockLessonResourceResponses[0]);
     });
 
     it('should throw NotFoundException when resource not found', async () => {
@@ -217,17 +254,14 @@ describe('LessonResourcesService', () => {
   describe('findByLesson', () => {
     it('should return resources for a specific lesson', async () => {
       const mockResources = [mockLessonResources[0]];
-      const findSpyRepository = jest.spyOn(mockRepository, 'find');
-
-      mockRepository.find.mockResolvedValue(mockResources);
+      mockQueryBuilder.getMany.mockResolvedValue(mockResources);
 
       const result = await service.findByLesson('lesson-1');
 
-      expect(findSpyRepository).toHaveBeenCalledWith({
-        where: { lesson_id: 'lesson-1', is_active: true },
-        order: { created_at: 'DESC' },
-      });
-      expect(result).toEqual(mockResources);
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith(
+        'resource',
+      );
+      expect(result).toEqual([mockLessonResourceResponses[0]]);
     });
   });
 

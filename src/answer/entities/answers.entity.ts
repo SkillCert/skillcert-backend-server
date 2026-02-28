@@ -34,5 +34,3 @@ export class Answer {
   updated_at: Date;
 }
 
-// Alias for backward compatibility
-export { Answers as Answer };

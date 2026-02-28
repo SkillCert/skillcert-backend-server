@@ -11,7 +11,7 @@ export class LessonsService {
   constructor(
     @InjectRepository(Lesson)
     private readonly lessonRepository: Repository<Lesson>,
-  ) { }
+  ) {}
 
   private toResponseDto(entity: Lesson): LessonResponseDto {
     return {

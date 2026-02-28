@@ -16,7 +16,7 @@ import { UsersRepository } from '../users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) { }
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   private toResponseDto(user: User): UserResponseDto {
     return {
@@ -32,20 +32,29 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const emailExists = await this.usersRepository.emailExists(createUserDto.email);
+    const emailExists = await this.usersRepository.emailExists(
+      createUserDto.email,
+    );
     if (emailExists) {
       throw new ConflictException('Email already exists');
     }
 
     // Validate wallet uniqueness if provided at creation time
     if (createUserDto.walletAddress) {
-      const walletExists = await this.usersRepository.walletExists(createUserDto.walletAddress);
+      const walletExists = await this.usersRepository.walletExists(
+        createUserDto.walletAddress,
+      );
       if (walletExists) {
-        throw new ConflictException('Wallet address is already linked to another account');
+        throw new ConflictException(
+          'Wallet address is already linked to another account',
+        );
       }
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, PASSWORD_SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      PASSWORD_SALT_ROUNDS,
+    );
 
     const saved = await this.usersRepository.create({
       ...createUserDto,
@@ -72,23 +81,34 @@ export class UsersService {
     return this.toResponseDto(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     if (!id) throw new BadRequestException('User ID is required');
 
     const userExists = await this.usersRepository.exists(id);
-    if (!userExists) throw new NotFoundException(`User with ID ${id} not found`);
+    if (!userExists)
+      throw new NotFoundException(`User with ID ${id} not found`);
 
     if (updateUserDto.email) {
-      const emailExists = await this.usersRepository.emailExists(updateUserDto.email, id);
+      const emailExists = await this.usersRepository.emailExists(
+        updateUserDto.email,
+        id,
+      );
       if (emailExists) throw new ConflictException('Email already exists');
     }
 
     if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, PASSWORD_SALT_ROUNDS);
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        PASSWORD_SALT_ROUNDS,
+      );
     }
 
     const updatedUser = await this.usersRepository.update(id, updateUserDto);
-    if (!updatedUser) throw new NotFoundException(`User with ID ${id} not found`);
+    if (!updatedUser)
+      throw new NotFoundException(`User with ID ${id} not found`);
 
     return this.toResponseDto(updatedUser);
   }
@@ -97,7 +117,8 @@ export class UsersService {
     if (!id) throw new BadRequestException('User ID is required');
 
     const userExists = await this.usersRepository.exists(id);
-    if (!userExists) throw new NotFoundException(`User with ID ${id} not found`);
+    if (!userExists)
+      throw new NotFoundException(`User with ID ${id} not found`);
 
     const deleted = await this.usersRepository.delete(id);
     if (!deleted) throw new NotFoundException(`User with ID ${id} not found`);
@@ -108,11 +129,14 @@ export class UsersService {
    * Address comparison is case-insensitive (stored lowercase in DB).
    */
   async findByWalletAddress(walletAddress: string): Promise<UserResponseDto> {
-    if (!walletAddress) throw new BadRequestException('Wallet address is required');
+    if (!walletAddress)
+      throw new BadRequestException('Wallet address is required');
 
     const user = await this.usersRepository.findByWalletAddress(walletAddress);
     if (!user) {
-      throw new NotFoundException(`No user found with wallet address ${walletAddress}`);
+      throw new NotFoundException(
+        `No user found with wallet address ${walletAddress}`,
+      );
     }
 
     return this.toResponseDto(user);
@@ -134,21 +158,34 @@ export class UsersService {
    * Link a Web3 wallet address to an existing user profile.
    * Ensures the address is not already taken by another account.
    */
-  async linkWallet(id: string, { walletAddress }: LinkWalletDto): Promise<UserResponseDto> {
+  async linkWallet(
+    id: string,
+    { walletAddress }: LinkWalletDto,
+  ): Promise<UserResponseDto> {
     if (!id) throw new BadRequestException('User ID is required');
 
     // Ensure the target user exists
     const userExists = await this.usersRepository.exists(id);
-    if (!userExists) throw new NotFoundException(`User with ID ${id} not found`);
+    if (!userExists)
+      throw new NotFoundException(`User with ID ${id} not found`);
 
     // Prevent duplicate wallet links across accounts
-    const walletTaken = await this.usersRepository.walletExists(walletAddress, id);
+    const walletTaken = await this.usersRepository.walletExists(
+      walletAddress,
+      id,
+    );
     if (walletTaken) {
-      throw new ConflictException('Wallet address is already linked to another account');
+      throw new ConflictException(
+        'Wallet address is already linked to another account',
+      );
     }
 
-    const updatedUser = await this.usersRepository.linkWallet(id, walletAddress);
-    if (!updatedUser) throw new NotFoundException(`User with ID ${id} not found`);
+    const updatedUser = await this.usersRepository.linkWallet(
+      id,
+      walletAddress,
+    );
+    if (!updatedUser)
+      throw new NotFoundException(`User with ID ${id} not found`);
 
     return this.toResponseDto(updatedUser);
   }

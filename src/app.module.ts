@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerModule } from './common/logger/logger.module';
-import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './common/guards/auth.guard';
+import { LoggerModule } from './common/logger/logger.module';
 
 function loadModules(): (new () => any)[] {
   const modulesDir = path.join(__dirname);
@@ -64,6 +64,7 @@ function loadModules(): (new () => any)[] {
       inject: [ConfigService],
     }),
     ...loadModules(),
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
@@ -74,4 +75,4 @@ function loadModules(): (new () => any)[] {
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

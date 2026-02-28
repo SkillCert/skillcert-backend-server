@@ -29,7 +29,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 @ApiTags('categories')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) { }
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new category' })
@@ -69,7 +69,8 @@ export class CategoriesController {
     message: string;
     data: Category;
   }> {
-    const category = await this.categoriesService.createCategory(createCategoryDto);
+    const category =
+      await this.categoriesService.createCategory(createCategoryDto);
     return {
       message: 'Category created successfully',
       data: category,
@@ -307,7 +308,10 @@ export class CategoriesController {
     message: string;
     data: Category;
   }> {
-    const category = await this.categoriesService.updateCategory(id, updateCategoryDto);
+    const category = await this.categoriesService.updateCategory(
+      id,
+      updateCategoryDto,
+    );
     return {
       message: 'Category updated successfully',
       data: category,
@@ -389,7 +393,8 @@ export class CategoriesController {
     message: string;
     data: { categoryId: string; coursesCount: number };
   }> {
-    const coursesCount = await this.categoriesService.getCategoryCoursesCount(id);
+    const coursesCount =
+      await this.categoriesService.getCategoryCoursesCount(id);
     return {
       message: 'Category courses count retrieved successfully',
       data: { categoryId: id, coursesCount },

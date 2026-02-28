@@ -19,7 +19,9 @@ export class ObjectivesService {
     private courseRepository: Repository<Course>,
   ) {}
 
-  async createObjetive(createObjectiveDto: CreateObjectiveDto): Promise<Objective> {
+  async createObjetive(
+    createObjectiveDto: CreateObjectiveDto,
+  ): Promise<Objective> {
     // Verify course exists
     const course = await this.courseRepository.findOne({
       where: { id: createObjectiveDto.courseId },
@@ -107,6 +109,23 @@ export class ObjectivesService {
 
     Object.assign(objective, updateObjectiveDto);
     return await this.objectiveRepository.save(objective);
+  }
+
+  // Alias methods matching controller expectations
+  async create(dto: CreateObjectiveDto): Promise<Objective> {
+    return this.createObjetive(dto);
+  }
+
+  async findAll(): Promise<Objective[]> {
+    return this.findAllObjectives();
+  }
+
+  async findOne(id: string): Promise<Objective> {
+    return this.findOneObjective(id);
+  }
+
+  async update(id: string, dto: UpdateObjectiveDto): Promise<Objective> {
+    return this.updateObjective(id, dto);
   }
 
   async remove(id: string): Promise<void> {

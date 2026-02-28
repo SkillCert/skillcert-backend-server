@@ -6,4 +6,4 @@ import { Answer } from './entities/answers.entity';
   imports: [TypeOrmModule.forFeature([Answer])],
   exports: [TypeOrmModule],
 })
-export class AnswersModule { }
+export class AnswersModule {}

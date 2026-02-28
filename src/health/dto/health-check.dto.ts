@@ -1,40 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class HealthCheckDto {
-  @ApiProperty({ 
+  @ApiProperty({
     enum: ['ok', 'error', 'shutting_down'],
-    description: 'Overall health status'
+    description: 'Overall health status',
   })
   status: 'ok' | 'error' | 'shutting_down';
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Information about healthy services',
-    required: false
+    required: false,
   })
   info?: Record<string, HealthIndicatorStatus>;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Information about unhealthy services',
-    required: false
+    required: false,
   })
   error?: Record<string, HealthIndicatorStatus>;
 
-  @ApiProperty({ 
-    description: 'Detailed information about all services'
+  @ApiProperty({
+    description: 'Detailed information about all services',
   })
   details: Record<string, HealthIndicatorStatus>;
 }
 
 export class HealthIndicatorStatus {
-  @ApiProperty({ 
+  @ApiProperty({
     enum: ['up', 'down'],
-    description: 'Service status'
+    description: 'Service status',
   })
   status: 'up' | 'down';
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Status message',
-    required: false
+    required: false,
   })
   message?: string;
 

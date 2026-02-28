@@ -2,20 +2,9 @@ import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CentralizedLoggerService } from './centralized-logger.service';
 
-// Mock the Logger class
-jest.mock('@nestjs/common', () => ({
-  ...jest.requireActual('@nestjs/common'),
-  Logger: jest.fn().mockImplementation(() => ({
-    log: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  })),
-}));
-
 describe('CentralizedLoggerService', () => {
   let service: CentralizedLoggerService;
-  let mockLogger: jest.Mocked<Logger>;
+  let mockLogger: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,8 +12,16 @@ describe('CentralizedLoggerService', () => {
     }).compile();
 
     service = module.get<CentralizedLoggerService>(CentralizedLoggerService);
-    // Get the mocked logger instance
-    mockLogger = (service as any).logger;
+
+    mockLogger = {
+      log: jest.spyOn(Logger.prototype, 'log').mockImplementation(),
+      error: jest.spyOn(Logger.prototype, 'error').mockImplementation(),
+      warn: jest.spyOn(Logger.prototype, 'warn').mockImplementation(),
+      debug: jest.spyOn(Logger.prototype, 'debug').mockImplementation(),
+    };
+
+    // Clear the logs that NestJS framework generated during module initialization
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -42,7 +39,7 @@ describe('CentralizedLoggerService', () => {
     });
 
     it('should set custom context when provided', () => {
-      const customService = new CentralizedLoggerService();
+      const customService = new CentralizedLoggerService('CustomService');
       expect(customService.getContext()).toBe('CustomService');
     });
 

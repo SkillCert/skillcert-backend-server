@@ -34,7 +34,7 @@ export class CourseProgressService {
     private quizRepo: Repository<Quiz>,
     @InjectRepository(QuizAttempt)
     private quizAttemptRepo: Repository<QuizAttempt>,
-  ) { }
+  ) {}
 
   /**
    * Converts a CourseProgress entity to a CourseProgressResponseDto.
@@ -105,7 +105,10 @@ export class CourseProgressService {
    * @returns {Promise<void>} A promise that resolves if all quiz requirements are met.
    * @throws {BadRequestException} If any quiz associated with the lesson has not been passed by the user.
    */
-  private async checkQuizRequirements(userId: string, lessonId: string): Promise<void> {
+  private async checkQuizRequirements(
+    userId: string,
+    lessonId: string,
+  ): Promise<void> {
     const quizzes = await this.quizRepo.find({
       where: { lesson_id: lessonId },
     });
@@ -134,7 +137,9 @@ export class CourseProgressService {
    * @param {string} enrollmentId - The ID of the enrollment to retrieve progress for.
    * @returns {Promise<CourseProgressResponseDto[]>} A promise that resolves to an array of DTOs representing the lesson progress for the enrollment.
    */
-  async getCourseProgress(enrollmentId: string):Promise<CourseProgressResponseDto[]> {
+  async getCourseProgress(
+    enrollmentId: string,
+  ): Promise<CourseProgressResponseDto[]> {
     const progress = await this.progressRepo.find({
       where: { enrollment: { id: enrollmentId } },
       relations: ['lesson', 'enrollment'],
@@ -164,7 +169,6 @@ export class CourseProgressService {
         status: ProgressStatus.COMPLETED,
       },
     });
-    
 
     return {
       enrollmentId,

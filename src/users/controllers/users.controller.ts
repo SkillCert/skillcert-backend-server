@@ -13,7 +13,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LinkWalletDto } from '../dto/link-wallet.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -24,7 +30,7 @@ import { UsersService } from '../providers/users.service';
 @ApiTags('users')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   /*
    * Brief description: Creates a new user in the system with the provided user data.
@@ -44,7 +50,10 @@ export class UsersController {
     },
   })
   @ApiResponse({ status: 400, description: 'Bad request – invalid input data' })
-  @ApiResponse({ status: 409, description: 'Conflict – email or wallet address already exists' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict – email or wallet address already exists',
+  })
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<{ message: string; data: UserResponseDto }> {
@@ -89,7 +98,10 @@ export class UsersController {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
-    const { users, total } = await this.usersService.findAll(pageNumber, limitNumber);
+    const { users, total } = await this.usersService.findAll(
+      pageNumber,
+      limitNumber,
+    );
 
     return {
       message: 'Users retrieved successfully',
@@ -116,7 +128,10 @@ export class UsersController {
       properties: { message: { type: 'string' }, data: { type: 'object' } },
     },
   })
-  @ApiResponse({ status: 404, description: 'No user found with that wallet address' })
+  @ApiResponse({
+    status: 404,
+    description: 'No user found with that wallet address',
+  })
   async findByWalletAddress(
     @Param('address') address: string,
   ): Promise<{ message: string; data: UserResponseDto }> {
@@ -160,7 +175,10 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update user by ID' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request – invalid input data or user ID' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request – invalid input data or user ID',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 409, description: 'Conflict – email already exists' })
   async update(
@@ -171,7 +189,7 @@ export class UsersController {
     return { message: 'User updated successfully', data: user };
   }
 
-  // PATCH /users/:id/wallet 
+  // PATCH /users/:id/wallet
 
   @Patch(':id/wallet')
   @HttpCode(HttpStatus.OK)
@@ -185,9 +203,15 @@ export class UsersController {
       properties: { message: { type: 'string' }, data: { type: 'object' } },
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad request – invalid address format' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request – invalid address format',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 409, description: 'Conflict – wallet already linked to another account' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict – wallet already linked to another account',
+  })
   async linkWallet(
     @Param('id') id: string,
     @Body() linkWalletDto: LinkWalletDto,
