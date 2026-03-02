@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -18,6 +19,18 @@ export class CreateCourseDto {
   @MinLength(VALIDATION_CONSTRAINTS.COURSE_DESCRIPTION_MIN_LENGTH)
   description: string;
 
+  @IsOptional()
+  @IsString()
+  thumbnailUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  language?: string;
+
+  @IsOptional()
+  @IsString()
+  syllabus?: string;
+
   @IsNotEmpty()
   @IsString()
   @IsUUID()
@@ -27,4 +40,8 @@ export class CreateCourseDto {
   @IsString()
   @IsUUID()
   categoryId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean;
 }

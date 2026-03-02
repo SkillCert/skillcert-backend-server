@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { COLUMN_LENGTHS } from '../../common/constants';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Category } from '../../entities/category.entity';
 import { Objective } from '../../objectives/entities/objective.entity';
@@ -25,6 +26,24 @@ export class Course {
 
   @Column({ type: 'text' })
   description: string;
+
+  @Column({
+    type: 'varchar',
+    length: COLUMN_LENGTHS.URL,
+    nullable: true,
+    name: 'thumbnail_url',
+  })
+  thumbnailUrl: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 16,
+    default: 'en',
+  })
+  language: string;
+
+  @Column({ type: 'text', nullable: true })
+  syllabus: string | null;
 
   @Column({ type: 'uuid' })
   professorId: string;
@@ -54,6 +73,9 @@ export class Course {
     eager: false,
   })
   objectives: Objective[];
+
+  @Column({ type: 'boolean', default: true })
+  isPublished: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

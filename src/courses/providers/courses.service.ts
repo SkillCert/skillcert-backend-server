@@ -69,6 +69,9 @@ export class CoursesService {
         id: course.id,
         title: course.title,
         description: course.description,
+        thumbnailUrl: course.thumbnailUrl ?? null,
+        language: course.language,
+        syllabus: course.syllabus ?? null,
         professor: {
           id: course.professor.id,
           name: course.professor.name,
@@ -99,6 +102,7 @@ export class CoursesService {
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,
         averageRating: course.acquireReviewAverageRating(),
+        isPublished: course.isPublished,
       })),
       total,
     };

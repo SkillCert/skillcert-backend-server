@@ -14,6 +14,21 @@ export class CourseResponseDto {
   @ApiProperty({ required: false })
   description?: string;
 
+  @ApiProperty({ required: false, description: 'Public thumbnail URL for the course' })
+  thumbnailUrl?: string | null;
+
+  @ApiProperty({
+    required: false,
+    description: 'Language code for the course content (e.g. en, fr)',
+  })
+  language?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Extended syllabus/outline text for the course',
+  })
+  syllabus?: string | null;
+
   @ApiProperty({ type: UserResponseDto })
   professor: UserResponseDto;
 
@@ -31,4 +46,10 @@ export class CourseResponseDto {
 
   @ApiProperty({ type: Number, default: 0 })
   averageRating: number;
+
+  @ApiProperty({
+    description:
+      'Whether the course is published and visible in public course listings',
+  })
+  isPublished: boolean;
 }
