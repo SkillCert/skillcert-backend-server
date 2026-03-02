@@ -50,10 +50,14 @@ export class CoursesRepository {
         'course.id',
         'course.title',
         'course.description',
+        'course.thumbnailUrl',
+        'course.language',
+        'course.syllabus',
         'course.professorId',
         'course.categoryId',
         'course.createdAt',
         'course.updatedAt',
+        'course.isPublished',
         'professor.id',
         'professor.name',
         'professor.email',
@@ -61,6 +65,7 @@ export class CoursesRepository {
         'category.name',
         'category.color',
       ])
+      .where('course.isPublished = :isPublished', { isPublished: true })
       .orderBy('course.createdAt', 'DESC');
 
     if (filters) {
@@ -84,10 +89,14 @@ export class CoursesRepository {
         id: true,
         title: true,
         description: true,
+        thumbnailUrl: true,
+        language: true,
+        syllabus: true,
         professorId: true,
         categoryId: true,
         createdAt: true,
         updatedAt: true,
+        isPublished: true,
         professor: {
           id: true,
           name: true,
@@ -110,10 +119,14 @@ export class CoursesRepository {
         id: true,
         title: true,
         description: true,
+        thumbnailUrl: true,
+        language: true,
+        syllabus: true,
         professorId: true,
         categoryId: true,
         createdAt: true,
         updatedAt: true,
+        isPublished: true,
         professor: {
           id: true,
           name: true,
@@ -170,10 +183,14 @@ export class CoursesRepository {
         id: true,
         title: true,
         description: true,
+        thumbnailUrl: true,
+        language: true,
+        syllabus: true,
         professorId: true,
         categoryId: true,
         createdAt: true,
         updatedAt: true,
+        isPublished: true,
         professor: {
           id: true,
           name: true,
@@ -210,14 +227,19 @@ export class CoursesRepository {
       .leftJoinAndSelect('course.professor', 'professor')
       .leftJoinAndSelect('course.category', 'category')
       .where('course.categoryId = :categoryId', { categoryId })
+      .andWhere('course.isPublished = :isPublished', { isPublished: true })
       .select([
         'course.id',
         'course.title',
         'course.description',
+        'course.thumbnailUrl',
+        'course.language',
+        'course.syllabus',
         'course.professorId',
         'course.categoryId',
         'course.createdAt',
         'course.updatedAt',
+        'course.isPublished',
         'professor.id',
         'professor.name',
         'professor.email',

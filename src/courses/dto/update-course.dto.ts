@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
 import { VALIDATION_CONSTRAINTS } from '../../common/constants';
 
 export class UpdateCourseDto {
@@ -14,6 +14,18 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
+  thumbnailUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  language?: string;
+
+  @IsOptional()
+  @IsString()
+  syllabus?: string;
+
+  @IsOptional()
+  @IsString()
   @IsUUID()
   professorId?: string;
 
@@ -21,4 +33,8 @@ export class UpdateCourseDto {
   @IsString()
   @IsUUID()
   categoryId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean;
 }
