@@ -1,0 +1,68 @@
+name: Deploy to Google Cloud Run
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+        types: [closed] # Deploy when PR is merged (which is effectively a push, but checking explicitly if needed. Usually just push to main is enough, let's stick to standard push to main)
+
+env:
+    PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+    REGION: ${{ secrets.GCP_REGION }}
+    WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+    WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+    ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
+    SERVICE_NAME: skillcert-backend
+
+jobs:
+    build-and-deploy:
+        # Only run on push to main or PR merged to main
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: "read"
+            id-token: "write" # Required for Workload Identity Federation
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Authenticate to Google Cloud
+              id: auth
+              uses: google-github-actions/auth@v2
+              with:
+                  workload_identity_provider: ${{ env.WIF_PROVIDER }}
+                  service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v2
+
+            - name: Configure Docker to use Artifact Registry
+              run: |
+                  gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+            - name: Build and Push Docker image
+              id: docker-build-push
+              run: |
+                  IMAGE_TAG=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+                  docker build -t $IMAGE_TAG .
+                  docker push $IMAGE_TAG
+                  echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+            - name: Deploy to Cloud Run
+              id: deploy
+              uses: google-github-actions/deploy-cloudrun@v2
+              with:
+                  service: ${{ env.SERVICE_NAME }}
+                  region: ${{ env.REGION }}
+                  image: ${{ steps.docker-build-push.outputs.image }}
+                  # The container port is 3000 according to Dockerfile
+                  port: 3000
+                  # Allow unauthenticated access (adjust if the backend should be private)
+                  flags: "--allow-unauthenticated"
+
+            - name: Show Cloud Run URL
+              run: |
+                  echo "Deployed successfully to: ${{ steps.deploy.outputs.url }}"
